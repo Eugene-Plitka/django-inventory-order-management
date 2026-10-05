@@ -3,6 +3,11 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
+from accounts.permissions import (
+    CanManageSalesOrder,
+    CanProcessSalesOrder,
+)
+
 from .exceptions import SalesOrderServiceError
 from .models import SalesOrder
 from .serializers import SalesOrderSerializer
@@ -18,7 +23,11 @@ class SalesOrderViewSet(viewsets.ModelViewSet):
     queryset = SalesOrder.objects.all()
     serializer_class = SalesOrderSerializer
 
-    @action(detail=True, methods=["post"])
+    @action(
+        detail=True,
+        methods=["post"],
+        permission_classes=[CanManageSalesOrder],
+    )
     def confirm(self, request, pk=None):
         try:
             order = confirm_sales_order(
@@ -31,7 +40,11 @@ class SalesOrderViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data)
 
-    @action(detail=True, methods=["post"])
+    @action(
+        detail=True,
+        methods=["post"],
+        permission_classes=[CanManageSalesOrder],
+    )
     def cancel(self, request, pk=None):
         try:
             order = cancel_sales_order(
@@ -48,6 +61,7 @@ class SalesOrderViewSet(viewsets.ModelViewSet):
         detail=True,
         methods=["post"],
         url_path="start-processing",
+        permission_classes=[CanProcessSalesOrder],
     )
     def start_processing(self, request, pk=None):
         try:
@@ -61,7 +75,11 @@ class SalesOrderViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data)
 
-    @action(detail=True, methods=["post"])
+    @action(
+        detail=True,
+        methods=["post"],
+        permission_classes=[CanProcessSalesOrder],
+    )
     def ship(self, request, pk=None):
         try:
             order = ship_sales_order(

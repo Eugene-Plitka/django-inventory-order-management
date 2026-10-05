@@ -117,3 +117,29 @@ def receive_purchase_order(*, order_id, performed_by):
     )
 
     return order
+
+
+@transaction.atomic
+def cancel_purchase_order(*, order_id):
+    order = PurchaseOrder.objects.select_for_update().get(pk=order_id)
+
+    if order.status not in {
+        PurchaseOrder.Status.DRAFT,
+        PurchaseOrder.Status.CONFIRMED,
+    }:
+        raise InvalidPurchaseOrderStatus(
+            "Only DRAFT or CONFIRMED purchase orders can be cancelled."
+        )
+
+    order.status = PurchaseOrder.Status.CANCELLED
+    order.cancelled_at = timezone.now()
+
+    order.save(
+        update_fields=(
+            "status",
+            "cancelled_at",
+            "updated_at",
+        )
+    )
+
+    return order

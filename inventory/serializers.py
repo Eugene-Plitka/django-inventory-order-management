@@ -39,3 +39,8 @@ class StockSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         )
+
+
+class StockAdjustmentSerializer(serializers.Serializer):
+    quantity = serializers.IntegerField()
+    reason = serializers.CharField()
