@@ -53,6 +53,46 @@ def create_sales_order(
 
 
 @transaction.atomic
+def update_sales_order(
+    *,
+    order_id,
+    customer=None,
+    warehouse=None,
+    items=None,
+):
+    order = SalesOrder.objects.select_for_update().get(pk=order_id)
+
+    if order.status != SalesOrder.Status.DRAFT:
+        raise InvalidSalesOrderStatus("Only a DRAFT sales order can be edited.")
+
+    update_fields = []
+
+    if customer is not None:
+        order.customer = customer
+        update_fields.append("customer")
+
+    if warehouse is not None:
+        order.warehouse = warehouse
+        update_fields.append("warehouse")
+
+    if items is not None:
+        order.items.all().delete()
+
+        for item_data in items:
+            SalesOrderItem.objects.create(
+                sales_order=order,
+                **item_data,
+            )
+
+    if update_fields or items is not None:
+        update_fields.append("updated_at")
+
+        order.save(update_fields=update_fields)
+
+    return order
+
+
+@transaction.atomic
 def confirm_sales_order(*, order_id):
     order = SalesOrder.objects.select_for_update().get(pk=order_id)
 

@@ -2,6 +2,7 @@ from rest_framework.routers import DefaultRouter
 
 from .views import (
     StockMovementViewSet,
+    StockReservationViewSet,
     StockViewSet,
     WarehouseViewSet,
 )
@@ -25,6 +26,12 @@ router.register(
     "stock-movements",
     StockMovementViewSet,
     basename="stock-movement",
+)
+
+router.register(
+    "stock-reservations",
+    StockReservationViewSet,
+    basename="stock-reservation",
 )
 
 urlpatterns = router.urls

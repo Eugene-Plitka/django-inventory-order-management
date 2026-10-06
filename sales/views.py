@@ -28,7 +28,17 @@ class SalesOrderViewSet(viewsets.ModelViewSet):
     ).prefetch_related(
         "items__product",
     )
+
     serializer_class = SalesOrderSerializer
+
+    http_method_names = (
+        "get",
+        "post",
+        "put",
+        "patch",
+        "head",
+        "options",
+    )
 
     filterset_fields = (
         "status",
@@ -50,6 +60,16 @@ class SalesOrderViewSet(viewsets.ModelViewSet):
     )
 
     ordering = ("-created_at",)
+
+    def update(self, request, *args, **kwargs):
+        try:
+            return super().update(
+                request,
+                *args,
+                **kwargs,
+            )
+        except SalesOrderServiceError as exc:
+            raise ValidationError({"detail": str(exc)})
 
     @extend_schema(
         request=None,

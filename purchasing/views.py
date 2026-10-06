@@ -29,6 +29,15 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
     )
     serializer_class = PurchaseOrderSerializer
 
+    http_method_names = (
+        "get",
+        "post",
+        "put",
+        "patch",
+        "head",
+        "options",
+    )
+
     filterset_fields = (
         "status",
         "supplier",
@@ -58,6 +67,16 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
             "No stock quantity is changed at this stage."
         ),
     )
+    def update(self, request, *args, **kwargs):
+        try:
+            return super().update(
+                request,
+                *args,
+                **kwargs,
+            )
+        except PurchaseOrderServiceError as exc:
+            raise ValidationError({"detail": str(exc)})
+
     @action(
         detail=True,
         methods=["post"],

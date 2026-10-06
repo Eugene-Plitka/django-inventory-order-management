@@ -1,0 +1,3015 @@
+openapi: 3.0.3
+info:
+  title: Inventory Order Management API
+  version: 1.0.0
+  description: REST API for inventory, sales orders, purchase orders and stock management.
+paths:
+  /api/auth/login/:
+    post:
+      operationId: auth_login_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+  /api/auth/refresh/:
+    post:
+      operationId: auth_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/categories/:
+    get:
+      operationId: categories_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - categories
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCategoryList'
+          description: ''
+    post:
+      operationId: categories_create
+      tags:
+      - categories
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Category'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Category'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+  /api/categories/{id}/:
+    get:
+      operationId: categories_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this category.
+        required: true
+      tags:
+      - categories
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+    put:
+      operationId: categories_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this category.
+        required: true
+      tags:
+      - categories
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Category'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Category'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+    patch:
+      operationId: categories_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this category.
+        required: true
+      tags:
+      - categories
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCategory'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCategory'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCategory'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+    delete:
+      operationId: categories_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this category.
+        required: true
+      tags:
+      - categories
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/customers/:
+    get:
+      operationId: customers_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - customers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCustomerList'
+          description: ''
+    post:
+      operationId: customers_create
+      tags:
+      - customers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Customer'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Customer'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+          description: ''
+  /api/customers/{id}/:
+    get:
+      operationId: customers_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this customer.
+        required: true
+      tags:
+      - customers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+          description: ''
+    put:
+      operationId: customers_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this customer.
+        required: true
+      tags:
+      - customers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Customer'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Customer'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+          description: ''
+    patch:
+      operationId: customers_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this customer.
+        required: true
+      tags:
+      - customers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCustomer'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCustomer'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCustomer'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+          description: ''
+    delete:
+      operationId: customers_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this customer.
+        required: true
+      tags:
+      - customers
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/manufacturers/:
+    get:
+      operationId: manufacturers_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - manufacturers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedManufacturerList'
+          description: ''
+    post:
+      operationId: manufacturers_create
+      tags:
+      - manufacturers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Manufacturer'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Manufacturer'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Manufacturer'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Manufacturer'
+          description: ''
+  /api/manufacturers/{id}/:
+    get:
+      operationId: manufacturers_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this manufacturer.
+        required: true
+      tags:
+      - manufacturers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Manufacturer'
+          description: ''
+    put:
+      operationId: manufacturers_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this manufacturer.
+        required: true
+      tags:
+      - manufacturers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Manufacturer'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Manufacturer'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Manufacturer'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Manufacturer'
+          description: ''
+    patch:
+      operationId: manufacturers_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this manufacturer.
+        required: true
+      tags:
+      - manufacturers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedManufacturer'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedManufacturer'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedManufacturer'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Manufacturer'
+          description: ''
+    delete:
+      operationId: manufacturers_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this manufacturer.
+        required: true
+      tags:
+      - manufacturers
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/products/:
+    get:
+      operationId: products_list
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: integer
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - in: query
+        name: manufacturer
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - products
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProductList'
+          description: ''
+    post:
+      operationId: products_create
+      tags:
+      - products
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Product'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Product'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+          description: ''
+  /api/products/{id}/:
+    get:
+      operationId: products_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product.
+        required: true
+      tags:
+      - products
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+          description: ''
+    put:
+      operationId: products_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product.
+        required: true
+      tags:
+      - products
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Product'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Product'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+          description: ''
+    patch:
+      operationId: products_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product.
+        required: true
+      tags:
+      - products
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProduct'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProduct'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProduct'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+          description: ''
+    delete:
+      operationId: products_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product.
+        required: true
+      tags:
+      - products
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/purchase-orders/:
+    get:
+      operationId: purchase_orders_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - CANCELLED
+          - CONFIRMED
+          - DRAFT
+          - RECEIVED
+        description: |-
+          * `DRAFT` - Draft
+          * `CONFIRMED` - Confirmed
+          * `RECEIVED` - Received
+          * `CANCELLED` - Cancelled
+      - in: query
+        name: supplier
+        schema:
+          type: integer
+      - in: query
+        name: warehouse
+        schema:
+          type: integer
+      tags:
+      - purchase-orders
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPurchaseOrderList'
+          description: ''
+    post:
+      operationId: purchase_orders_create
+      tags:
+      - purchase-orders
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PurchaseOrder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PurchaseOrder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PurchaseOrder'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+          description: ''
+  /api/purchase-orders/{id}/:
+    get:
+      operationId: purchase_orders_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this purchase order.
+        required: true
+      tags:
+      - purchase-orders
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+          description: ''
+    put:
+      operationId: purchase_orders_update
+      description: Confirm a DRAFT purchase order. No stock quantity is changed at
+        this stage.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this purchase order.
+        required: true
+      tags:
+      - purchase-orders
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+          description: ''
+    patch:
+      operationId: purchase_orders_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this purchase order.
+        required: true
+      tags:
+      - purchase-orders
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPurchaseOrder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPurchaseOrder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPurchaseOrder'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+          description: ''
+  /api/purchase-orders/{id}/cancel/:
+    post:
+      operationId: purchase_orders_cancel_create
+      description: Cancel a DRAFT or CONFIRMED purchase order.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this purchase order.
+        required: true
+      tags:
+      - purchase-orders
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+          description: ''
+  /api/purchase-orders/{id}/confirm/:
+    post:
+      operationId: purchase_orders_confirm_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this purchase order.
+        required: true
+      tags:
+      - purchase-orders
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PurchaseOrder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PurchaseOrder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PurchaseOrder'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+          description: ''
+  /api/purchase-orders/{id}/receive/:
+    post:
+      operationId: purchase_orders_receive_create
+      description: Receive a CONFIRMED purchase order, increase physical stock and
+        create PURCHASE_RECEIPT stock movements.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this purchase order.
+        required: true
+      tags:
+      - purchase-orders
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+          description: ''
+  /api/sales-orders/:
+    get:
+      operationId: sales_orders_list
+      parameters:
+      - in: query
+        name: customer
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - CANCELLED
+          - CONFIRMED
+          - DRAFT
+          - PROCESSING
+          - SHIPPED
+        description: |-
+          * `DRAFT` - Draft
+          * `CONFIRMED` - Confirmed
+          * `PROCESSING` - Processing
+          * `SHIPPED` - Shipped
+          * `CANCELLED` - Cancelled
+      - in: query
+        name: warehouse
+        schema:
+          type: integer
+      tags:
+      - sales-orders
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSalesOrderList'
+          description: ''
+    post:
+      operationId: sales_orders_create
+      tags:
+      - sales-orders
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SalesOrder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SalesOrder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SalesOrder'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesOrder'
+          description: ''
+  /api/sales-orders/{id}/:
+    get:
+      operationId: sales_orders_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this sales order.
+        required: true
+      tags:
+      - sales-orders
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesOrder'
+          description: ''
+    put:
+      operationId: sales_orders_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this sales order.
+        required: true
+      tags:
+      - sales-orders
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SalesOrder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SalesOrder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SalesOrder'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesOrder'
+          description: ''
+    patch:
+      operationId: sales_orders_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this sales order.
+        required: true
+      tags:
+      - sales-orders
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSalesOrder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSalesOrder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSalesOrder'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesOrder'
+          description: ''
+  /api/sales-orders/{id}/cancel/:
+    post:
+      operationId: sales_orders_cancel_create
+      description: Cancel a DRAFT or CONFIRMED sales order. Active reservations are
+        released when required.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this sales order.
+        required: true
+      tags:
+      - sales-orders
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesOrder'
+          description: ''
+  /api/sales-orders/{id}/confirm/:
+    post:
+      operationId: sales_orders_confirm_create
+      description: Confirm a DRAFT sales order and create active stock reservations.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this sales order.
+        required: true
+      tags:
+      - sales-orders
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesOrder'
+          description: ''
+  /api/sales-orders/{id}/ship/:
+    post:
+      operationId: sales_orders_ship_create
+      description: Ship a PROCESSING sales order, decrease physical stock, consume
+        active reservations and create SALES_SHIPMENT stock movements.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this sales order.
+        required: true
+      tags:
+      - sales-orders
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesOrder'
+          description: ''
+  /api/sales-orders/{id}/start-processing/:
+    post:
+      operationId: sales_orders_start_processing_create
+      description: Move a CONFIRMED sales order to PROCESSING.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this sales order.
+        required: true
+      tags:
+      - sales-orders
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesOrder'
+          description: ''
+  /api/schema/:
+    get:
+      operationId: schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - ug
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - schema
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/stock-movements/:
+    get:
+      operationId: stock_movements_list
+      parameters:
+      - in: query
+        name: movement_type
+        schema:
+          type: string
+          enum:
+          - ADJUSTMENT_IN
+          - ADJUSTMENT_OUT
+          - PURCHASE_RECEIPT
+          - SALES_SHIPMENT
+        description: |-
+          * `PURCHASE_RECEIPT` - Purchase Receipt
+          * `SALES_SHIPMENT` - Sales Shipment
+          * `ADJUSTMENT_IN` - Adjustment In
+          * `ADJUSTMENT_OUT` - Adjustment Out
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: performed_by
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: stock
+        schema:
+          type: integer
+      tags:
+      - stock-movements
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStockMovementList'
+          description: ''
+  /api/stock-movements/{id}/:
+    get:
+      operationId: stock_movements_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this stock movement.
+        required: true
+      tags:
+      - stock-movements
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockMovement'
+          description: ''
+  /api/stock-reservations/:
+    get:
+      operationId: stock_reservations_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: sales_order_item
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - ACTIVE
+          - CONSUMED
+          - RELEASED
+        description: |-
+          * `ACTIVE` - Active
+          * `RELEASED` - Released
+          * `CONSUMED` - Consumed
+      - in: query
+        name: stock
+        schema:
+          type: integer
+      tags:
+      - stock-reservations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStockReservationList'
+          description: ''
+  /api/stock-reservations/{id}/:
+    get:
+      operationId: stock_reservations_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this stock reservation.
+        required: true
+      tags:
+      - stock-reservations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockReservation'
+          description: ''
+  /api/stocks/:
+    get:
+      operationId: stocks_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: product
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: warehouse
+        schema:
+          type: integer
+      tags:
+      - stocks
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStockList'
+          description: ''
+  /api/stocks/{id}/:
+    get:
+      operationId: stocks_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this stock.
+        required: true
+      tags:
+      - stocks
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stock'
+          description: ''
+  /api/stocks/{id}/adjust/:
+    post:
+      operationId: stocks_adjust_create
+      description: Manually adjust physical stock. Only administrators can perform
+        this operation. A StockMovement is created automatically.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this stock.
+        required: true
+      tags:
+      - stocks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StockAdjustment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StockAdjustment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StockAdjustment'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stock'
+          description: ''
+  /api/suppliers/:
+    get:
+      operationId: suppliers_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - suppliers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSupplierList'
+          description: ''
+    post:
+      operationId: suppliers_create
+      tags:
+      - suppliers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Supplier'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Supplier'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Supplier'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+          description: ''
+  /api/suppliers/{id}/:
+    get:
+      operationId: suppliers_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this supplier.
+        required: true
+      tags:
+      - suppliers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+          description: ''
+    put:
+      operationId: suppliers_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this supplier.
+        required: true
+      tags:
+      - suppliers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Supplier'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Supplier'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Supplier'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+          description: ''
+    patch:
+      operationId: suppliers_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this supplier.
+        required: true
+      tags:
+      - suppliers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSupplier'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSupplier'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSupplier'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+          description: ''
+    delete:
+      operationId: suppliers_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this supplier.
+        required: true
+      tags:
+      - suppliers
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/warehouses/:
+    get:
+      operationId: warehouses_list
+      parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - warehouses
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedWarehouseList'
+          description: ''
+    post:
+      operationId: warehouses_create
+      tags:
+      - warehouses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Warehouse'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Warehouse'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Warehouse'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Warehouse'
+          description: ''
+  /api/warehouses/{id}/:
+    get:
+      operationId: warehouses_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this warehouse.
+        required: true
+      tags:
+      - warehouses
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Warehouse'
+          description: ''
+    put:
+      operationId: warehouses_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this warehouse.
+        required: true
+      tags:
+      - warehouses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Warehouse'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Warehouse'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Warehouse'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Warehouse'
+          description: ''
+    patch:
+      operationId: warehouses_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this warehouse.
+        required: true
+      tags:
+      - warehouses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedWarehouse'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedWarehouse'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedWarehouse'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Warehouse'
+          description: ''
+    delete:
+      operationId: warehouses_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this warehouse.
+        required: true
+      tags:
+      - warehouses
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+components:
+  schemas:
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - slug
+      - updated_at
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        contact_person:
+          type: string
+          maxLength: 150
+        email:
+          oneOf:
+          - type: string
+            format: email
+            maxLength: 254
+          - type: string
+            maxLength: 0
+        phone:
+          type: string
+          maxLength: 50
+        address:
+          type: string
+        tax_id:
+          type: string
+          maxLength: 100
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - updated_at
+    Manufacturer:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 120
+        country:
+          type: string
+          maxLength: 100
+        website:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - updated_at
+    MovementTypeEnum:
+      enum:
+      - PURCHASE_RECEIPT
+      - SALES_SHIPMENT
+      - ADJUSTMENT_IN
+      - ADJUSTMENT_OUT
+      type: string
+      description: |-
+        * `PURCHASE_RECEIPT` - Purchase Receipt
+        * `SALES_SHIPMENT` - Sales Shipment
+        * `ADJUSTMENT_IN` - Adjustment In
+        * `ADJUSTMENT_OUT` - Adjustment Out
+    PaginatedCategoryList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+    PaginatedCustomerList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Customer'
+    PaginatedManufacturerList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Manufacturer'
+    PaginatedProductList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+    PaginatedPurchaseOrderList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PurchaseOrder'
+    PaginatedSalesOrderList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SalesOrder'
+    PaginatedStockList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Stock'
+    PaginatedStockMovementList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StockMovement'
+    PaginatedStockReservationList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StockReservation'
+    PaginatedSupplierList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Supplier'
+    PaginatedWarehouseList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Warehouse'
+    PatchedCategory:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedCustomer:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        contact_person:
+          type: string
+          maxLength: 150
+        email:
+          oneOf:
+          - type: string
+            format: email
+            maxLength: 254
+          - type: string
+            maxLength: 0
+        phone:
+          type: string
+          maxLength: 50
+        address:
+          type: string
+        tax_id:
+          type: string
+          maxLength: 100
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedManufacturer:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 120
+        country:
+          type: string
+          maxLength: 100
+        website:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedProduct:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        sku:
+          type: string
+          maxLength: 50
+        name:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        category:
+          type: integer
+        manufacturer:
+          type: integer
+        sale_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedPurchaseOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        order_number:
+          type: string
+          readOnly: true
+        supplier:
+          type: integer
+        warehouse:
+          type: integer
+        status:
+          allOf:
+          - $ref: '#/components/schemas/PurchaseOrderStatusEnum'
+          readOnly: true
+        created_by:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        confirmed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        received_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        cancelled_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PurchaseOrderItem'
+    PatchedSalesOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        order_number:
+          type: string
+          readOnly: true
+        customer:
+          type: integer
+        warehouse:
+          type: integer
+        status:
+          allOf:
+          - $ref: '#/components/schemas/SalesOrderStatusEnum'
+          readOnly: true
+        created_by:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        confirmed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        shipped_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        cancelled_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SalesOrderItem'
+    PatchedSupplier:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        contact_person:
+          type: string
+          maxLength: 150
+        email:
+          oneOf:
+          - type: string
+            format: email
+            maxLength: 254
+          - type: string
+            maxLength: 0
+        phone:
+          type: string
+          maxLength: 50
+        address:
+          type: string
+        tax_id:
+          type: string
+          maxLength: 100
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedWarehouse:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 150
+        code:
+          type: string
+          maxLength: 50
+        address:
+          type: string
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        sku:
+          type: string
+          maxLength: 50
+        name:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        category:
+          type: integer
+        manufacturer:
+          type: integer
+        sale_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - category
+      - created_at
+      - id
+      - manufacturer
+      - name
+      - sale_price
+      - sku
+      - updated_at
+    PurchaseOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        order_number:
+          type: string
+          readOnly: true
+        supplier:
+          type: integer
+        warehouse:
+          type: integer
+        status:
+          allOf:
+          - $ref: '#/components/schemas/PurchaseOrderStatusEnum'
+          readOnly: true
+        created_by:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        confirmed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        received_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        cancelled_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PurchaseOrderItem'
+      required:
+      - cancelled_at
+      - confirmed_at
+      - created_at
+      - created_by
+      - id
+      - items
+      - order_number
+      - received_at
+      - status
+      - supplier
+      - updated_at
+      - warehouse
+    PurchaseOrderItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        product:
+          type: integer
+        quantity:
+          type: integer
+          minimum: 1
+        unit_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+      required:
+      - id
+      - product
+      - quantity
+      - unit_price
+    PurchaseOrderStatusEnum:
+      enum:
+      - DRAFT
+      - CONFIRMED
+      - RECEIVED
+      - CANCELLED
+      type: string
+      description: |-
+        * `DRAFT` - Draft
+        * `CONFIRMED` - Confirmed
+        * `RECEIVED` - Received
+        * `CANCELLED` - Cancelled
+    SalesOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        order_number:
+          type: string
+          readOnly: true
+        customer:
+          type: integer
+        warehouse:
+          type: integer
+        status:
+          allOf:
+          - $ref: '#/components/schemas/SalesOrderStatusEnum'
+          readOnly: true
+        created_by:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        confirmed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        shipped_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        cancelled_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SalesOrderItem'
+      required:
+      - cancelled_at
+      - confirmed_at
+      - created_at
+      - created_by
+      - customer
+      - id
+      - items
+      - order_number
+      - shipped_at
+      - status
+      - warehouse
+    SalesOrderItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        product:
+          type: integer
+        quantity:
+          type: integer
+          minimum: 1
+        unit_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+      required:
+      - id
+      - product
+      - quantity
+      - unit_price
+    SalesOrderStatusEnum:
+      enum:
+      - DRAFT
+      - CONFIRMED
+      - PROCESSING
+      - SHIPPED
+      - CANCELLED
+      type: string
+      description: |-
+        * `DRAFT` - Draft
+        * `CONFIRMED` - Confirmed
+        * `PROCESSING` - Processing
+        * `SHIPPED` - Shipped
+        * `CANCELLED` - Cancelled
+    Stock:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        product:
+          type: integer
+        warehouse:
+          type: integer
+        quantity:
+          type: integer
+          readOnly: true
+        reserved_quantity:
+          type: integer
+          readOnly: true
+        available_quantity:
+          type: integer
+          readOnly: true
+        reorder_level:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - available_quantity
+      - created_at
+      - id
+      - product
+      - quantity
+      - reserved_quantity
+      - updated_at
+      - warehouse
+    StockAdjustment:
+      type: object
+      properties:
+        quantity:
+          type: integer
+        reason:
+          type: string
+      required:
+      - quantity
+      - reason
+    StockMovement:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        stock:
+          type: integer
+          readOnly: true
+        movement_type:
+          allOf:
+          - $ref: '#/components/schemas/MovementTypeEnum'
+          readOnly: true
+        quantity:
+          type: integer
+          readOnly: true
+        sales_order_item:
+          type: integer
+          readOnly: true
+          nullable: true
+        purchase_order_item:
+          type: integer
+          readOnly: true
+          nullable: true
+        reason:
+          type: string
+          readOnly: true
+        performed_by:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - movement_type
+      - performed_by
+      - purchase_order_item
+      - quantity
+      - reason
+      - sales_order_item
+      - stock
+    StockReservation:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        sales_order_item:
+          type: integer
+          readOnly: true
+        stock:
+          type: integer
+          readOnly: true
+        quantity:
+          type: integer
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StockReservationStatusEnum'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        released_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - created_at
+      - id
+      - quantity
+      - released_at
+      - sales_order_item
+      - status
+      - stock
+    StockReservationStatusEnum:
+      enum:
+      - ACTIVE
+      - RELEASED
+      - CONSUMED
+      type: string
+      description: |-
+        * `ACTIVE` - Active
+        * `RELEASED` - Released
+        * `CONSUMED` - Consumed
+    Supplier:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        contact_person:
+          type: string
+          maxLength: 150
+        email:
+          oneOf:
+          - type: string
+            format: email
+            maxLength: 254
+          - type: string
+            maxLength: 0
+        phone:
+          type: string
+          maxLength: 50
+        address:
+          type: string
+        tax_id:
+          type: string
+          maxLength: 100
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - updated_at
+    TokenObtainPair:
+      type: object
+      properties:
+        email:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - email
+      - password
+      - refresh
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          writeOnly: true
+      required:
+      - access
+      - refresh
+    Warehouse:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 150
+        code:
+          type: string
+          maxLength: 50
+        address:
+          type: string
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - code
+      - created_at
+      - id
+      - name
+      - updated_at
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

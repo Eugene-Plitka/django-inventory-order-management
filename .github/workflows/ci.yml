@@ -51,6 +51,9 @@ jobs:
       - name: Check Django project
         run: python manage.py check
 
+      - name: Check migrations
+        run: python manage.py makemigrations --check --dry-run
+
       - name: Run migrations
         run: python manage.py migrate --noinput
 

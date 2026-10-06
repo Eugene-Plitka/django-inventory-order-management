@@ -50,5 +50,13 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(sale_price__gte=0),
+                name="product_sale_price_gte_0",
+            ),
+        ]
+
     def __str__(self):
         return f"{self.sku} - {self.name}"

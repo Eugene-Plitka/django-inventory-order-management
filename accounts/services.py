@@ -76,6 +76,7 @@ ROLE_PERMISSIONS = {
             "warehouse": {"view"},
             "stock": {"view"},
             "stockmovement": {"view"},
+            "stockreservation": {"view"},
         },
         "sales": {
             "salesorder": {"view"},

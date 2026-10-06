@@ -47,6 +47,12 @@ class StockAdmin(admin.ModelAdmin):
         "warehouse__name",
     )
 
+    readonly_fields = (
+        "quantity",
+        "created_at",
+        "updated_at",
+    )
+
 
 @admin.register(StockReservation)
 class StockReservationAdmin(admin.ModelAdmin):

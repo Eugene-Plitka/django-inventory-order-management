@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.utils import timezone
 
 from inventory.models import Stock, StockMovement
@@ -52,6 +52,46 @@ def create_purchase_order(
 
 
 @transaction.atomic
+def update_purchase_order(
+    *,
+    order_id,
+    supplier=None,
+    warehouse=None,
+    items=None,
+):
+    order = PurchaseOrder.objects.select_for_update().get(pk=order_id)
+
+    if order.status != PurchaseOrder.Status.DRAFT:
+        raise InvalidPurchaseOrderStatus("Only a DRAFT purchase order can be edited.")
+
+    update_fields = []
+
+    if supplier is not None:
+        order.supplier = supplier
+        update_fields.append("supplier")
+
+    if warehouse is not None:
+        order.warehouse = warehouse
+        update_fields.append("warehouse")
+
+    if items is not None:
+        order.items.all().delete()
+
+        for item_data in items:
+            PurchaseOrderItem.objects.create(
+                purchase_order=order,
+                **item_data,
+            )
+
+    if update_fields or items is not None:
+        update_fields.append("updated_at")
+
+        order.save(update_fields=update_fields)
+
+    return order
+
+
+@transaction.atomic
 def confirm_purchase_order(*, order_id):
     order = PurchaseOrder.objects.select_for_update().get(pk=order_id)
 
@@ -79,6 +119,31 @@ def confirm_purchase_order(*, order_id):
     return order
 
 
+def _get_or_create_locked_stock(*, product, warehouse):
+    try:
+        return Stock.objects.select_for_update().get(
+            product=product,
+            warehouse=warehouse,
+        )
+    except Stock.DoesNotExist:
+        try:
+            with transaction.atomic():
+                Stock.objects.create(
+                    product=product,
+                    warehouse=warehouse,
+                    quantity=0,
+                    reorder_level=0,
+                )
+        except IntegrityError:
+            # Another transaction created the same stock row first.
+            pass
+
+        return Stock.objects.select_for_update().get(
+            product=product,
+            warehouse=warehouse,
+        )
+
+
 @transaction.atomic
 def receive_purchase_order(*, order_id, performed_by):
     order = PurchaseOrder.objects.select_for_update().get(pk=order_id)
@@ -91,13 +156,9 @@ def receive_purchase_order(*, order_id, performed_by):
     items = order.items.order_by("product_id")
 
     for item in items:
-        stock, _ = Stock.objects.select_for_update().get_or_create(
+        stock = _get_or_create_locked_stock(
             product=item.product,
             warehouse=order.warehouse,
-            defaults={
-                "quantity": 0,
-                "reorder_level": 0,
-            },
         )
 
         stock.quantity += item.quantity
