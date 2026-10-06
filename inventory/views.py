@@ -17,9 +17,29 @@ class WarehouseViewSet(viewsets.ModelViewSet):
     queryset = Warehouse.objects.all()
     serializer_class = WarehouseSerializer
 
+    filterset_fields = ("is_active",)
+
+    search_fields = (
+        "code",
+        "name",
+        "address",
+    )
+
+    ordering_fields = (
+        "id",
+        "code",
+        "name",
+        "created_at",
+    )
+
+    ordering = ("code",)
+
 
 class StockViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Stock.objects.all()
+    queryset = Stock.objects.select_related(
+        "product",
+        "warehouse",
+    )
     serializer_class = StockSerializer
 
     @action(
@@ -44,3 +64,24 @@ class StockViewSet(viewsets.ReadOnlyModelViewSet):
         output_serializer = self.get_serializer(stock)
 
         return Response(output_serializer.data)
+
+    filterset_fields = (
+        "product",
+        "warehouse",
+    )
+
+    search_fields = (
+        "product__sku",
+        "product__name",
+        "warehouse__code",
+        "warehouse__name",
+    )
+
+    ordering_fields = (
+        "id",
+        "quantity",
+        "reorder_level",
+        "updated_at",
+    )
+
+    ordering = ("id",)

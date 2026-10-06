@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
@@ -20,9 +21,43 @@ from .services import (
 
 
 class SalesOrderViewSet(viewsets.ModelViewSet):
-    queryset = SalesOrder.objects.all()
+    queryset = SalesOrder.objects.select_related(
+        "customer",
+        "warehouse",
+        "created_by",
+    ).prefetch_related(
+        "items__product",
+    )
     serializer_class = SalesOrderSerializer
 
+    filterset_fields = (
+        "status",
+        "customer",
+        "warehouse",
+    )
+
+    search_fields = (
+        "order_number",
+        "customer__name",
+    )
+
+    ordering_fields = (
+        "id",
+        "order_number",
+        "created_at",
+        "confirmed_at",
+        "shipped_at",
+    )
+
+    ordering = ("-created_at",)
+
+    @extend_schema(
+        request=None,
+        responses=SalesOrderSerializer,
+        description=(
+            "Confirm a DRAFT sales order and create active stock reservations."
+        ),
+    )
     @action(
         detail=True,
         methods=["post"],
@@ -40,6 +75,14 @@ class SalesOrderViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data)
 
+    @extend_schema(
+        request=None,
+        responses=SalesOrderSerializer,
+        description=(
+            "Cancel a DRAFT or CONFIRMED sales order. "
+            "Active reservations are released when required."
+        ),
+    )
     @action(
         detail=True,
         methods=["post"],
@@ -57,6 +100,11 @@ class SalesOrderViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data)
 
+    @extend_schema(
+        request=None,
+        responses=SalesOrderSerializer,
+        description=("Move a CONFIRMED sales order to PROCESSING."),
+    )
     @action(
         detail=True,
         methods=["post"],
@@ -75,6 +123,15 @@ class SalesOrderViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data)
 
+    @extend_schema(
+        request=None,
+        responses=SalesOrderSerializer,
+        description=(
+            "Ship a PROCESSING sales order, decrease physical stock, "
+            "consume active reservations and create "
+            "SALES_SHIPMENT stock movements."
+        ),
+    )
     @action(
         detail=True,
         methods=["post"],

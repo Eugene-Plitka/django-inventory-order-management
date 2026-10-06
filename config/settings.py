@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "django_filters",
+    "drf_spectacular",
     "accounts",
     "catalog",
     "partners",
@@ -150,4 +152,20 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
         "accounts.permissions.StrictDjangoModelPermissions",
     ),
+    "DEFAULT_FILTER_BACKENDS": (
+        "django_filters.rest_framework.DjangoFilterBackend",
+        "rest_framework.filters.SearchFilter",
+        "rest_framework.filters.OrderingFilter",
+    ),
+    "DEFAULT_PAGINATION_CLASS": ("rest_framework.pagination.PageNumberPagination"),
+    "PAGE_SIZE": 20,
+    "DEFAULT_SCHEMA_CLASS": ("drf_spectacular.openapi.AutoSchema"),
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Inventory Order Management API",
+    "DESCRIPTION": (
+        "REST API for inventory, sales orders, purchase orders and stock management."
+    ),
+    "VERSION": "1.0.0",
 }
