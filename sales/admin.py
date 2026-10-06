@@ -7,6 +7,33 @@ class SalesOrderItemInline(admin.TabularInline):
     model = SalesOrderItem
     extra = 1
 
+    def has_change_permission(self, request, obj=None):
+        if obj and obj.status != SalesOrder.Status.DRAFT:
+            return False
+
+        return super().has_change_permission(
+            request,
+            obj,
+        )
+
+    def has_add_permission(self, request, obj=None):
+        if obj and obj.status != SalesOrder.Status.DRAFT:
+            return False
+
+        return super().has_add_permission(
+            request,
+            obj,
+        )
+
+    def has_delete_permission(self, request, obj=None):
+        if obj and obj.status != SalesOrder.Status.DRAFT:
+            return False
+
+        return super().has_delete_permission(
+            request,
+            obj,
+        )
+
 
 @admin.register(SalesOrder)
 class SalesOrderAdmin(admin.ModelAdmin):

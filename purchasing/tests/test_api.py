@@ -5,7 +5,7 @@ from rest_framework.test import APITestCase
 
 from accounts.services import setup_roles
 from catalog.models import Category, Manufacturer, Product
-from inventory.models import Warehouse
+from inventory.models import Stock, Warehouse
 from partners.models import Supplier
 from purchasing.models import PurchaseOrder, PurchaseOrderItem
 
@@ -300,3 +300,152 @@ class PurchaseOrderAPITests(APITestCase):
         )
 
         self.assertTrue(PurchaseOrder.objects.filter(id=self.draft_order.id).exists())
+
+
+class PurchaseOrderActionPermissionTests(APITestCase):
+    def setUp(self):
+        setup_roles()
+
+        purchasing_group = Group.objects.get(name="Purchasing Manager")
+
+        warehouse_group = Group.objects.get(name="Warehouse Employee")
+
+        self.purchasing_user = User.objects.create_user(
+            email="purchasing-actions@example.com",
+            password="test12345",
+        )
+        self.purchasing_user.groups.add(purchasing_group)
+
+        self.warehouse_user = User.objects.create_user(
+            email="warehouse-purchasing-actions@example.com",
+            password="test12345",
+        )
+        self.warehouse_user.groups.add(warehouse_group)
+
+        self.supplier = Supplier.objects.create(
+            name="Action Supplier",
+        )
+
+        self.warehouse = Warehouse.objects.create(
+            name="Purchase Action Warehouse",
+            code="PUR-ACTION",
+        )
+
+        category = Category.objects.create(
+            name="Purchase Action Category",
+            slug="purchase-action-category",
+        )
+
+        manufacturer = Manufacturer.objects.create(
+            name="Purchase Action Manufacturer",
+        )
+
+        self.product = Product.objects.create(
+            sku="PUR-ACTION-001",
+            name="Purchase Action Product",
+            category=category,
+            manufacturer=manufacturer,
+            sale_price="100.00",
+        )
+
+    def create_order(self, status):
+        order = PurchaseOrder.objects.create(
+            order_number=f"PO-ACTION-{status}",
+            supplier=self.supplier,
+            warehouse=self.warehouse,
+            created_by=self.purchasing_user,
+            status=status,
+        )
+
+        PurchaseOrderItem.objects.create(
+            purchase_order=order,
+            product=self.product,
+            quantity=5,
+            unit_price="60.00",
+        )
+
+        return order
+
+    def test_purchasing_manager_can_confirm_purchase_order(self):
+        order = self.create_order(PurchaseOrder.Status.DRAFT)
+
+        self.client.force_authenticate(user=self.purchasing_user)
+
+        response = self.client.post(f"/api/purchase-orders/{order.id}/confirm/")
+
+        self.assertEqual(
+            response.status_code,
+            200,
+        )
+
+        order.refresh_from_db()
+
+        self.assertEqual(
+            order.status,
+            PurchaseOrder.Status.CONFIRMED,
+        )
+
+    def test_warehouse_employee_cannot_confirm_purchase_order(self):
+        order = self.create_order(PurchaseOrder.Status.DRAFT)
+
+        self.client.force_authenticate(user=self.warehouse_user)
+
+        response = self.client.post(f"/api/purchase-orders/{order.id}/confirm/")
+
+        self.assertEqual(
+            response.status_code,
+            403,
+        )
+
+    def test_purchasing_manager_cannot_receive_purchase_order(self):
+        order = self.create_order(PurchaseOrder.Status.CONFIRMED)
+
+        self.client.force_authenticate(user=self.purchasing_user)
+
+        response = self.client.post(f"/api/purchase-orders/{order.id}/receive/")
+
+        self.assertEqual(
+            response.status_code,
+            403,
+        )
+
+    def test_warehouse_employee_can_receive_purchase_order(self):
+        order = self.create_order(PurchaseOrder.Status.CONFIRMED)
+
+        self.client.force_authenticate(user=self.warehouse_user)
+
+        response = self.client.post(f"/api/purchase-orders/{order.id}/receive/")
+
+        self.assertEqual(
+            response.status_code,
+            200,
+        )
+
+        order.refresh_from_db()
+
+        self.assertEqual(
+            order.status,
+            PurchaseOrder.Status.RECEIVED,
+        )
+
+        stock = Stock.objects.get(
+            product=self.product,
+            warehouse=self.warehouse,
+        )
+
+        self.assertEqual(
+            stock.quantity,
+            5,
+        )
+
+    def test_warehouse_employee_cannot_cancel_purchase_order(self):
+        order = self.create_order(PurchaseOrder.Status.DRAFT)
+
+        self.client.force_authenticate(user=self.warehouse_user)
+
+        response = self.client.post(f"/api/purchase-orders/{order.id}/cancel/")
+
+        self.assertEqual(
+            response.status_code,
+            403,
+        )

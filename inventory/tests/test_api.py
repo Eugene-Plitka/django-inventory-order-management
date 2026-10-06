@@ -573,3 +573,159 @@ class StockReservationAPITests(APITestCase):
             response.data["results"][0]["status"],
             StockReservation.Status.ACTIVE,
         )
+
+
+class StockAdjustmentPermissionTests(APITestCase):
+    def setUp(self):
+        setup_roles()
+
+        administrator_group = Group.objects.get(name="Administrator")
+
+        sales_group = Group.objects.get(name="Sales Manager")
+
+        purchasing_group = Group.objects.get(name="Purchasing Manager")
+
+        warehouse_group = Group.objects.get(name="Warehouse Employee")
+
+        self.admin_user = User.objects.create_user(
+            email="administrator-adjust@example.com",
+            password="test12345",
+        )
+        self.admin_user.groups.add(administrator_group)
+
+        self.sales_user = User.objects.create_user(
+            email="sales-adjust@example.com",
+            password="test12345",
+        )
+        self.sales_user.groups.add(sales_group)
+
+        self.purchasing_user = User.objects.create_user(
+            email="purchasing-adjust@example.com",
+            password="test12345",
+        )
+        self.purchasing_user.groups.add(purchasing_group)
+
+        self.warehouse_user = User.objects.create_user(
+            email="warehouse-adjust@example.com",
+            password="test12345",
+        )
+        self.warehouse_user.groups.add(warehouse_group)
+
+        category = Category.objects.create(
+            name="Adjustment Category",
+            slug="adjustment-category",
+        )
+
+        manufacturer = Manufacturer.objects.create(
+            name="Adjustment Manufacturer",
+        )
+
+        self.product = Product.objects.create(
+            sku="ADJUST-001",
+            name="Adjustment Product",
+            category=category,
+            manufacturer=manufacturer,
+            sale_price="100.00",
+        )
+
+        self.warehouse = Warehouse.objects.create(
+            name="Adjustment Warehouse",
+            code="ADJUST",
+        )
+
+        self.stock = Stock.objects.create(
+            product=self.product,
+            warehouse=self.warehouse,
+            quantity=20,
+            reorder_level=5,
+        )
+
+    def test_administrator_can_adjust_stock(self):
+        self.client.force_authenticate(user=self.admin_user)
+
+        response = self.client.post(
+            f"/api/stocks/{self.stock.id}/adjust/",
+            {
+                "quantity": 5,
+                "reason": "Manual inventory correction",
+            },
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            200,
+        )
+
+        self.stock.refresh_from_db()
+
+        self.assertEqual(
+            self.stock.quantity,
+            25,
+        )
+
+        movement = StockMovement.objects.get(
+            stock=self.stock,
+            movement_type=(StockMovement.MovementType.ADJUSTMENT_IN),
+        )
+
+        self.assertEqual(
+            movement.quantity,
+            5,
+        )
+
+        self.assertEqual(
+            movement.performed_by,
+            self.admin_user,
+        )
+
+    def test_sales_manager_cannot_adjust_stock(self):
+        self.client.force_authenticate(user=self.sales_user)
+
+        response = self.client.post(
+            f"/api/stocks/{self.stock.id}/adjust/",
+            {
+                "quantity": 5,
+                "reason": "Should be forbidden",
+            },
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            403,
+        )
+
+    def test_purchasing_manager_cannot_adjust_stock(self):
+        self.client.force_authenticate(user=self.purchasing_user)
+
+        response = self.client.post(
+            f"/api/stocks/{self.stock.id}/adjust/",
+            {
+                "quantity": 5,
+                "reason": "Should be forbidden",
+            },
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            403,
+        )
+
+    def test_warehouse_employee_cannot_adjust_stock(self):
+        self.client.force_authenticate(user=self.warehouse_user)
+
+        response = self.client.post(
+            f"/api/stocks/{self.stock.id}/adjust/",
+            {
+                "quantity": 5,
+                "reason": "Should be forbidden",
+            },
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            403,
+        )

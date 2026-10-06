@@ -59,14 +59,6 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
 
     ordering = ("-created_at",)
 
-    @extend_schema(
-        request=None,
-        responses=PurchaseOrderSerializer,
-        description=(
-            "Confirm a DRAFT purchase order. "
-            "No stock quantity is changed at this stage."
-        ),
-    )
     def update(self, request, *args, **kwargs):
         try:
             return super().update(
@@ -77,6 +69,14 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
         except PurchaseOrderServiceError as exc:
             raise ValidationError({"detail": str(exc)})
 
+    @extend_schema(
+        request=None,
+        responses=PurchaseOrderSerializer,
+        description=(
+            "Confirm a DRAFT purchase order. "
+            "No stock quantity is changed at this stage."
+        ),
+    )
     @action(
         detail=True,
         methods=["post"],

@@ -805,8 +805,6 @@ paths:
           description: ''
     put:
       operationId: purchase_orders_update
-      description: Confirm a DRAFT purchase order. No stock quantity is changed at
-        this stage.
       parameters:
       - in: path
         name: id
@@ -816,6 +814,18 @@ paths:
         required: true
       tags:
       - purchase-orders
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PurchaseOrder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PurchaseOrder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PurchaseOrder'
+        required: true
       security:
       - jwtAuth: []
       responses:
@@ -881,6 +891,8 @@ paths:
   /api/purchase-orders/{id}/confirm/:
     post:
       operationId: purchase_orders_confirm_create
+      description: Confirm a DRAFT purchase order. No stock quantity is changed at
+        this stage.
       parameters:
       - in: path
         name: id
@@ -890,18 +902,6 @@ paths:
         required: true
       tags:
       - purchase-orders
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PurchaseOrder'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PurchaseOrder'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/PurchaseOrder'
-        required: true
       security:
       - jwtAuth: []
       responses:
@@ -2462,6 +2462,10 @@ components:
           type: string
           format: date-time
           readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
         confirmed_at:
           type: string
           format: date-time
@@ -2699,6 +2703,10 @@ components:
           type: string
           format: date-time
           readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
         confirmed_at:
           type: string
           format: date-time
@@ -2729,6 +2737,7 @@ components:
       - order_number
       - shipped_at
       - status
+      - updated_at
       - warehouse
     SalesOrderItem:
       type: object

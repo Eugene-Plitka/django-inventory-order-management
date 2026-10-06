@@ -7,7 +7,11 @@ from rest_framework.test import APITestCase
 
 from accounts.services import setup_roles
 from catalog.models import Category, Manufacturer, Product
-from inventory.models import Warehouse
+from inventory.models import (
+    Stock,
+    StockReservation,
+    Warehouse,
+)
 from partners.models import Customer
 from sales.models import SalesOrder, SalesOrderItem
 
@@ -345,3 +349,206 @@ class SalesOrderFilterTests(APITestCase):
         )
 
         self.assertTrue(SalesOrder.objects.filter(id=self.draft_order.id).exists())
+
+
+class SalesOrderActionPermissionTests(APITestCase):
+    def setUp(self):
+        setup_roles()
+
+        sales_group = Group.objects.get(name="Sales Manager")
+
+        warehouse_group = Group.objects.get(name="Warehouse Employee")
+
+        self.sales_user = User.objects.create_user(
+            email="sales-actions@example.com",
+            password="test12345",
+        )
+        self.sales_user.groups.add(sales_group)
+
+        self.warehouse_user = User.objects.create_user(
+            email="warehouse-actions@example.com",
+            password="test12345",
+        )
+        self.warehouse_user.groups.add(warehouse_group)
+
+        self.customer = Customer.objects.create(
+            name="Action Customer",
+        )
+
+        self.warehouse = Warehouse.objects.create(
+            name="Action Warehouse",
+            code="ACTION",
+        )
+
+        category = Category.objects.create(
+            name="Action Category",
+            slug="action-category",
+        )
+
+        manufacturer = Manufacturer.objects.create(
+            name="Action Manufacturer",
+        )
+
+        self.product = Product.objects.create(
+            sku="ACTION-001",
+            name="Action Product",
+            category=category,
+            manufacturer=manufacturer,
+            sale_price="100.00",
+        )
+
+        self.stock = Stock.objects.create(
+            product=self.product,
+            warehouse=self.warehouse,
+            quantity=50,
+            reorder_level=10,
+        )
+
+    def create_order(self, status):
+        order = SalesOrder.objects.create(
+            order_number=f"SO-ACTION-{status}",
+            customer=self.customer,
+            warehouse=self.warehouse,
+            created_by=self.sales_user,
+            status=status,
+        )
+
+        item = SalesOrderItem.objects.create(
+            sales_order=order,
+            product=self.product,
+            quantity=5,
+            unit_price="100.00",
+        )
+
+        return order, item
+
+    def test_sales_manager_can_confirm_sales_order(self):
+        order, _ = self.create_order(SalesOrder.Status.DRAFT)
+
+        self.client.force_authenticate(user=self.sales_user)
+
+        response = self.client.post(f"/api/sales-orders/{order.id}/confirm/")
+
+        self.assertEqual(
+            response.status_code,
+            200,
+        )
+
+        order.refresh_from_db()
+
+        self.assertEqual(
+            order.status,
+            SalesOrder.Status.CONFIRMED,
+        )
+
+    def test_warehouse_employee_cannot_confirm_sales_order(self):
+        order, _ = self.create_order(SalesOrder.Status.DRAFT)
+
+        self.client.force_authenticate(user=self.warehouse_user)
+
+        response = self.client.post(f"/api/sales-orders/{order.id}/confirm/")
+
+        self.assertEqual(
+            response.status_code,
+            403,
+        )
+
+    def test_sales_manager_cannot_start_processing_sales_order(self):
+        order, _ = self.create_order(SalesOrder.Status.CONFIRMED)
+
+        self.client.force_authenticate(user=self.sales_user)
+
+        response = self.client.post(f"/api/sales-orders/{order.id}/start-processing/")
+
+        self.assertEqual(
+            response.status_code,
+            403,
+        )
+
+    def test_warehouse_employee_can_start_processing_sales_order(self):
+        order, _ = self.create_order(SalesOrder.Status.CONFIRMED)
+
+        self.client.force_authenticate(user=self.warehouse_user)
+
+        response = self.client.post(f"/api/sales-orders/{order.id}/start-processing/")
+
+        self.assertEqual(
+            response.status_code,
+            200,
+        )
+
+        order.refresh_from_db()
+
+        self.assertEqual(
+            order.status,
+            SalesOrder.Status.PROCESSING,
+        )
+
+    def test_warehouse_employee_cannot_cancel_sales_order(self):
+        order, _ = self.create_order(SalesOrder.Status.DRAFT)
+
+        self.client.force_authenticate(user=self.warehouse_user)
+
+        response = self.client.post(f"/api/sales-orders/{order.id}/cancel/")
+
+        self.assertEqual(
+            response.status_code,
+            403,
+        )
+
+    def test_sales_manager_cannot_ship_sales_order(self):
+        order, item = self.create_order(SalesOrder.Status.PROCESSING)
+
+        StockReservation.objects.create(
+            sales_order_item=item,
+            stock=self.stock,
+            quantity=5,
+            status=StockReservation.Status.ACTIVE,
+        )
+
+        self.client.force_authenticate(user=self.sales_user)
+
+        response = self.client.post(f"/api/sales-orders/{order.id}/ship/")
+
+        self.assertEqual(
+            response.status_code,
+            403,
+        )
+
+    def test_warehouse_employee_can_ship_sales_order(self):
+        order, item = self.create_order(SalesOrder.Status.PROCESSING)
+
+        reservation = StockReservation.objects.create(
+            sales_order_item=item,
+            stock=self.stock,
+            quantity=5,
+            status=StockReservation.Status.ACTIVE,
+        )
+
+        self.client.force_authenticate(user=self.warehouse_user)
+
+        response = self.client.post(f"/api/sales-orders/{order.id}/ship/")
+
+        self.assertEqual(
+            response.status_code,
+            200,
+        )
+
+        order.refresh_from_db()
+        self.stock.refresh_from_db()
+        reservation.refresh_from_db()
+
+        self.assertEqual(
+            order.status,
+            SalesOrder.Status.SHIPPED,
+        )
+
+        self.assertEqual(
+            self.stock.quantity,
+            45,
+        )
+
+        self.assertEqual(
+            reservation.status,
+            StockReservation.Status.CONSUMED,
+        )
