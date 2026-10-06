@@ -6,6 +6,7 @@ from django.test.utils import CaptureQueriesContext
 from rest_framework.test import APITestCase
 
 from accounts.services import setup_roles
+from catalog.models import Category, Manufacturer, Product
 from inventory.models import Warehouse
 from partners.models import Customer
 from sales.models import SalesOrder
@@ -35,6 +36,23 @@ class SalesOrderFilterTests(APITestCase):
         self.warehouse = Warehouse.objects.create(
             name="Main Warehouse",
             code="MAIN",
+        )
+
+        self.category = Category.objects.create(
+            name="Brake System",
+            slug="brake-system",
+        )
+
+        self.manufacturer = Manufacturer.objects.create(
+            name="Test Manufacturer",
+        )
+
+        self.product = Product.objects.create(
+            sku="BP-001",
+            name="Brake Pads",
+            category=self.category,
+            manufacturer=self.manufacturer,
+            sale_price="100.00",
         )
 
         SalesOrder.objects.create(
@@ -94,4 +112,39 @@ class SalesOrderFilterTests(APITestCase):
         self.assertLess(
             query_count,
             7,
+        )
+
+    def test_order_number_is_generated_by_server(self):
+        payload = {
+            "order_number": "HACKED-123",
+            "customer": self.customer.id,
+            "warehouse": self.warehouse.id,
+            "items": [
+                {
+                    "product": self.product.id,
+                    "quantity": 2,
+                    "unit_price": "100.00",
+                }
+            ],
+        }
+
+        response = self.client.post(
+            "/api/sales-orders/",
+            payload,
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            201,
+        )
+
+        self.assertRegex(
+            response.data["order_number"],
+            r"^SO-\d{4}-\d{6}$",
+        )
+
+        self.assertNotEqual(
+            response.data["order_number"],
+            "HACKED-123",
         )

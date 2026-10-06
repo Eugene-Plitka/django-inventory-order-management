@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from django.db import transaction
 from django.db.models import Sum
 from django.utils import timezone
@@ -16,12 +18,29 @@ from .models import SalesOrder, SalesOrderItem
 
 
 @transaction.atomic
-def create_sales_order(*, created_by, customer, warehouse, order_number, items):
+def create_sales_order(
+    *,
+    created_by,
+    customer,
+    warehouse,
+    items,
+):
+    temporary_number = f"TMP-{uuid4().hex[:20]}"
+
     order = SalesOrder.objects.create(
         created_by=created_by,
         customer=customer,
         warehouse=warehouse,
-        order_number=order_number,
+        order_number=temporary_number,
+    )
+
+    order.order_number = f"SO-{timezone.now().year}-{order.id:06d}"
+
+    order.save(
+        update_fields=(
+            "order_number",
+            "updated_at",
+        )
     )
 
     for item_data in items:

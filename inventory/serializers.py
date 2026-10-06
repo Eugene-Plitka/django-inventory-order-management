@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Stock, Warehouse
+from .models import Stock, StockMovement, Warehouse
 
 
 class WarehouseSerializer(serializers.ModelSerializer):
@@ -44,3 +44,20 @@ class StockSerializer(serializers.ModelSerializer):
 class StockAdjustmentSerializer(serializers.Serializer):
     quantity = serializers.IntegerField()
     reason = serializers.CharField()
+
+
+class StockMovementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StockMovement
+        fields = (
+            "id",
+            "stock",
+            "movement_type",
+            "quantity",
+            "sales_order_item",
+            "purchase_order_item",
+            "reason",
+            "performed_by",
+            "created_at",
+        )
+        read_only_fields = fields

@@ -37,6 +37,7 @@ class SalesOrderSerializer(serializers.ModelSerializer):
 
         read_only_fields = (
             "id",
+            "order_number",
             "status",
             "created_by",
             "created_at",

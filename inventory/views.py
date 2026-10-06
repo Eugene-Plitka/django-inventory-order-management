@@ -3,10 +3,11 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
-from .models import Stock, Warehouse
+from .models import Stock, StockMovement, Warehouse
 from .permissions import IsAdministrator
 from .serializers import (
     StockAdjustmentSerializer,
+    StockMovementSerializer,
     StockSerializer,
     WarehouseSerializer,
 )
@@ -85,3 +86,37 @@ class StockViewSet(viewsets.ReadOnlyModelViewSet):
     )
 
     ordering = ("id",)
+
+
+class StockMovementViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = StockMovement.objects.select_related(
+        "stock",
+        "stock__product",
+        "stock__warehouse",
+        "performed_by",
+        "sales_order_item",
+        "purchase_order_item",
+    )
+    serializer_class = StockMovementSerializer
+
+    filterset_fields = (
+        "stock",
+        "movement_type",
+        "performed_by",
+    )
+
+    search_fields = (
+        "stock__product__sku",
+        "stock__product__name",
+        "stock__warehouse__code",
+        "stock__warehouse__name",
+        "reason",
+    )
+
+    ordering_fields = (
+        "id",
+        "quantity",
+        "created_at",
+    )
+
+    ordering = ("-created_at",)

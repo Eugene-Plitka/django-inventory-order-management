@@ -29,17 +29,19 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
             "status",
             "created_by",
             "created_at",
+            "updated_at",
             "confirmed_at",
             "received_at",
             "cancelled_at",
             "items",
         )
-
         read_only_fields = (
             "id",
+            "order_number",
             "status",
             "created_by",
             "created_at",
+            "updated_at",
             "confirmed_at",
             "received_at",
             "cancelled_at",

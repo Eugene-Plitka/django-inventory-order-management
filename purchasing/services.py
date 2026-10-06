@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from django.db import transaction
 from django.utils import timezone
 
@@ -20,14 +22,24 @@ def create_purchase_order(
     created_by,
     supplier,
     warehouse,
-    order_number,
     items,
 ):
+    temporary_number = f"TMP-{uuid4().hex[:20]}"
+
     order = PurchaseOrder.objects.create(
         created_by=created_by,
         supplier=supplier,
         warehouse=warehouse,
-        order_number=order_number,
+        order_number=temporary_number,
+    )
+
+    order.order_number = f"PO-{timezone.now().year}-{order.id:06d}"
+
+    order.save(
+        update_fields=(
+            "order_number",
+            "updated_at",
+        )
     )
 
     for item_data in items:
@@ -99,7 +111,7 @@ def receive_purchase_order(*, order_id, performed_by):
 
         StockMovement.objects.create(
             stock=stock,
-            movement_type=StockMovement.MovementType.PURCHASE_RECEIPT,
+            movement_type=(StockMovement.MovementType.PURCHASE_RECEIPT),
             quantity=item.quantity,
             purchase_order_item=item,
             performed_by=performed_by,
