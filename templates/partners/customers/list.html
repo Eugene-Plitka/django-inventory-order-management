@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Customers
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">
+            Customers
+        </h1>
+
+        <p class="page-subtitle">
+            Manage customer companies and contacts.
+        </p>
+    </div>
+
+    <div class="page-header-actions">
+        {% if perms.partners.add_customer %}
+            <a
+                href="{% url 'partners_web:customer-create' %}"
+                class="button button-primary"
+            >
+                + Add Customer
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+
+<div class="card catalog-panel">
+
+    <form
+        class="product-filters partner-filters"
+        hx-get="{% url 'partners_web:customer-list' %}"
+        hx-target="#customers-table"
+        hx-push-url="true"
+        hx-trigger="change, submit"
+    >
+
+        <div class="filter-search">
+            <span class="filter-search-icon">
+                ⌕
+            </span>
+
+            <input
+                type="search"
+                name="search"
+                value="{{ search }}"
+                placeholder="Search customers..."
+                hx-get="{% url 'partners_web:customer-list' %}"
+                hx-target="#customers-table"
+                hx-push-url="true"
+                hx-trigger="keyup changed delay:350ms"
+                hx-include="closest form"
+            >
+        </div>
+
+
+        <select name="status">
+            <option value="">
+                All statuses
+            </option>
+
+            <option
+                value="active"
+                {% if selected_status == "active" %}
+                    selected
+                {% endif %}
+            >
+                Active
+            </option>
+
+            <option
+                value="inactive"
+                {% if selected_status == "inactive" %}
+                    selected
+                {% endif %}
+            >
+                Inactive
+            </option>
+        </select>
+
+    </form>
+
+
+    <div id="customers-table">
+        {% include "partners/customers/_table.html" %}
+    </div>
+
+</div>
+
+{% endblock %}

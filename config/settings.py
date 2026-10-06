@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "inventory",
     "sales",
     "purchasing",
+    "notifications",
 ]
 
 AUTH_USER_MODEL = "accounts.User"
@@ -73,16 +74,26 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [
+            BASE_DIR / "templates",
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "accounts.context_processors.user_role",
+                "notifications.context_processors.notifications",
             ],
         },
     },
+]
+
+STATIC_URL = "static/"
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
 ]
 
 WSGI_APPLICATION = "config.wsgi.application"
@@ -169,3 +180,7 @@ SPECTACULAR_SETTINGS = {
     ),
     "VERSION": "1.0.0",
 }
+
+LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/login/"

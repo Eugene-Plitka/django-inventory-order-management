@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Stock
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">
+            Stock
+        </h1>
+
+        <p class="page-subtitle">
+            Monitor physical, reserved and available inventory.
+        </p>
+    </div>
+</div>
+
+
+<div class="card catalog-panel">
+
+    <form
+        class="product-filters stock-filters"
+        hx-get="{% url 'inventory_web:stock-list' %}"
+        hx-target="#stock-table"
+        hx-push-url="true"
+        hx-trigger="change, submit"
+    >
+
+        <div class="filter-search">
+            <span class="filter-search-icon">
+                ⌕
+            </span>
+
+            <input
+                type="search"
+                name="search"
+                value="{{ search }}"
+                placeholder="Search by SKU or product name..."
+                hx-get="{% url 'inventory_web:stock-list' %}"
+                hx-target="#stock-table"
+                hx-push-url="true"
+                hx-trigger="keyup changed delay:350ms"
+                hx-include="closest form"
+            >
+        </div>
+
+
+        <select name="warehouse">
+            <option value="">
+                All warehouses
+            </option>
+
+            {% for warehouse in warehouses %}
+                <option
+                    value="{{ warehouse.id }}"
+                    {% if selected_warehouse == warehouse.id|stringformat:"s" %}
+                        selected
+                    {% endif %}
+                >
+                    {{ warehouse.code }} — {{ warehouse.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+
+        <select name="low_stock">
+            <option value="">
+                All stock
+            </option>
+
+            <option
+                value="true"
+                {% if selected_low_stock == "true" %}
+                    selected
+                {% endif %}
+            >
+                Low stock only
+            </option>
+        </select>
+
+    </form>
+
+
+    <div id="stock-table">
+        {% include "inventory/stock/_table.html" %}
+    </div>
+
+</div>
+
+{% endblock %}

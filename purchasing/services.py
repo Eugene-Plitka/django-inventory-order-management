@@ -4,6 +4,11 @@ from django.db import IntegrityError, transaction
 from django.utils import timezone
 
 from inventory.models import Stock, StockMovement
+from notifications.services import (
+    notify_purchase_order_confirmed,
+    notify_purchase_order_received,
+    schedule_notification,
+)
 
 from .models import PurchaseOrder, PurchaseOrderItem
 
@@ -116,6 +121,11 @@ def confirm_purchase_order(*, order_id):
         )
     )
 
+    schedule_notification(
+        notify_purchase_order_confirmed,
+        order,
+    )
+
     return order
 
 
@@ -187,6 +197,11 @@ def receive_purchase_order(*, order_id, performed_by):
             "received_at",
             "updated_at",
         )
+    )
+
+    schedule_notification(
+        notify_purchase_order_received,
+        order,
     )
 
     return order

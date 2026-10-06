@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Adjust Stock
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">
+            Adjust Stock
+        </h1>
+
+        <p class="page-subtitle">
+            Manual inventory adjustment with movement history.
+        </p>
+    </div>
+
+    <div class="page-header-actions">
+        <a
+            href="{% url 'inventory_web:stock-list' %}"
+            class="button button-secondary"
+        >
+            Back to Stock
+        </a>
+    </div>
+</div>
+
+
+<div class="form-layout">
+
+    <div class="card stock-summary-card">
+
+        <div>
+            <span class="stock-summary-label">
+                Product
+            </span>
+
+            <strong>
+                {{ stock.product.sku }} —
+                {{ stock.product.name }}
+            </strong>
+        </div>
+
+        <div>
+            <span class="stock-summary-label">
+                Warehouse
+            </span>
+
+            <strong>
+                {{ stock.warehouse.code }} —
+                {{ stock.warehouse.name }}
+            </strong>
+        </div>
+
+        <div>
+            <span class="stock-summary-label">
+                Current physical quantity
+            </span>
+
+            <strong class="stock-summary-value">
+                {{ stock.quantity }}
+            </strong>
+        </div>
+
+    </div>
+
+
+    <form
+        method="post"
+        class="card form-card"
+    >
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="form-errors">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+
+        <div class="form-section">
+
+            <div class="form-section-header">
+                <h2>
+                    Manual Adjustment
+                </h2>
+
+                <p>
+                    Use a positive value to add stock and a negative
+                    value to remove stock.
+                </p>
+            </div>
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="{{ form.quantity.id_for_label }}">
+                        Quantity Adjustment
+                    </label>
+
+                    {{ form.quantity }}
+
+                    <div class="form-help">
+                        Examples: +10 adds 10 units, -5 removes 5 units.
+                    </div>
+
+                    {% for error in form.quantity.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+
+                <div class="form-group form-group-full">
+                    <label for="{{ form.reason.id_for_label }}">
+                        Reason
+                    </label>
+
+                    {{ form.reason }}
+
+                    {% for error in form.reason.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-actions">
+
+            <a
+                href="{% url 'inventory_web:stock-list' %}"
+                class="button button-secondary"
+            >
+                Cancel
+            </a>
+
+            <button
+                type="submit"
+                class="button button-primary"
+            >
+                Apply Adjustment
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

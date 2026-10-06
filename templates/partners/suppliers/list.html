@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Suppliers
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">
+            Suppliers
+        </h1>
+
+        <p class="page-subtitle">
+            Manage supplier companies and contacts.
+        </p>
+    </div>
+
+    <div class="page-header-actions">
+        {% if perms.partners.add_supplier %}
+            <a
+                href="{% url 'partners_web:supplier-create' %}"
+                class="button button-primary"
+            >
+                + Add Supplier
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+
+<div class="card catalog-panel">
+
+    <form
+        class="product-filters partner-filters"
+        hx-get="{% url 'partners_web:supplier-list' %}"
+        hx-target="#suppliers-table"
+        hx-push-url="true"
+        hx-trigger="change, submit"
+    >
+
+        <div class="filter-search">
+            <span class="filter-search-icon">
+                ⌕
+            </span>
+
+            <input
+                type="search"
+                name="search"
+                value="{{ search }}"
+                placeholder="Search suppliers..."
+                hx-get="{% url 'partners_web:supplier-list' %}"
+                hx-target="#suppliers-table"
+                hx-push-url="true"
+                hx-trigger="keyup changed delay:350ms"
+                hx-include="closest form"
+            >
+        </div>
+
+
+        <select name="status">
+            <option value="">
+                All statuses
+            </option>
+
+            <option
+                value="active"
+                {% if selected_status == "active" %}
+                    selected
+                {% endif %}
+            >
+                Active
+            </option>
+
+            <option
+                value="inactive"
+                {% if selected_status == "inactive" %}
+                    selected
+                {% endif %}
+            >
+                Inactive
+            </option>
+        </select>
+
+    </form>
+
+
+    <div id="suppliers-table">
+        {% include "partners/suppliers/_table.html" %}
+    </div>
+
+</div>
+
+{% endblock %}

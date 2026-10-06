@@ -1,0 +1,197 @@
+<div class="notification-page-list">
+
+    {% for notification in page_obj %}
+
+        <div
+            class="
+                notification-page-item
+                {% if not notification.is_read %}
+                    notification-page-item-unread
+                {% endif %}
+            "
+        >
+
+            <div class="notification-page-icon">
+
+                {% if notification.notification_type == "LOW_STOCK" %}
+                    !
+                {% elif notification.notification_type == "SALES_ORDER_CONFIRMED" %}
+                    SO
+                {% elif notification.notification_type == "SALES_ORDER_SHIPPED" %}
+                    SO
+                {% elif notification.notification_type == "PURCHASE_ORDER_CONFIRMED" %}
+                    PO
+                {% elif notification.notification_type == "PURCHASE_ORDER_RECEIVED" %}
+                    PO
+                {% else %}
+                    N
+                {% endif %}
+
+            </div>
+
+
+            <div class="notification-page-content">
+
+                <div class="notification-page-title-row">
+
+                    <strong>
+                        {{ notification.title }}
+                    </strong>
+
+                    {% if not notification.is_read %}
+                        <span class="notification-unread-dot"></span>
+                    {% endif %}
+
+                </div>
+
+
+                <p>
+                    {{ notification.message }}
+                </p>
+
+
+                <div class="notification-page-meta">
+
+                    <span>
+                        {{ notification.created_at|date:"M d, Y H:i" }}
+                    </span>
+
+                    <span>
+                        {{ notification.created_at|timesince }}
+                        ago
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="notification-page-actions">
+
+                {% if notification.url %}
+
+                    <form
+                        method="post"
+                        action="{% url 'notifications:open' notification.pk %}"
+                    >
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            class="button button-primary button-small"
+                        >
+                            Open
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+
+                {% if not notification.is_read %}
+
+                    <form
+                        method="post"
+                        action="{% url 'notifications:read' notification.pk %}"
+                    >
+                        {% csrf_token %}
+
+                        <input
+                            type="hidden"
+                            name="next"
+                            value="{{ request.get_full_path }}"
+                        >
+
+                        <button
+                            type="submit"
+                            class="button button-secondary button-small"
+                        >
+                            Mark read
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    {% empty %}
+
+        <div class="notification-page-empty">
+
+            <div class="empty-state-icon">
+                ✓
+            </div>
+
+            <strong>
+                No notifications
+            </strong>
+
+            <span>
+                There are no notifications matching this filter.
+            </span>
+
+        </div>
+
+    {% endfor %}
+
+</div>
+
+
+{% if page_obj.paginator.num_pages > 1 %}
+
+    <div class="pagination-bar">
+
+        <div class="pagination-summary">
+
+            Showing
+            {{ page_obj.start_index }}
+            –
+            {{ page_obj.end_index }}
+            of
+            {{ page_obj.paginator.count }}
+
+        </div>
+
+
+        <div class="pagination">
+
+            {% if page_obj.has_previous %}
+
+                <a
+                    hx-get="?page={{ page_obj.previous_page_number }}&status={{ selected_status }}"
+                    hx-target="#notification-page-list"
+                    hx-push-url="true"
+                    class="pagination-button"
+                >
+                    ‹
+                </a>
+
+            {% endif %}
+
+
+            <span class="pagination-button pagination-active">
+                {{ page_obj.number }}
+            </span>
+
+
+            {% if page_obj.has_next %}
+
+                <a
+                    hx-get="?page={{ page_obj.next_page_number }}&status={{ selected_status }}"
+                    hx-target="#notification-page-list"
+                    hx-push-url="true"
+                    class="pagination-button"
+                >
+                    ›
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+{% endif %}

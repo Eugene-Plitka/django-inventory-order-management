@@ -1,0 +1,137 @@
+<div class="table-wrapper">
+
+    <table class="data-table">
+
+        <thead>
+            <tr>
+                <th>Supplier</th>
+                <th>Contact</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Tax ID</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for supplier in page_obj %}
+
+                <tr>
+
+                    <td>
+                        <strong class="product-table-name">
+                            {{ supplier.name }}
+                        </strong>
+                    </td>
+
+                    <td>
+                        {{ supplier.contact_person|default:"—" }}
+                    </td>
+
+                    <td>
+                        {{ supplier.email|default:"—" }}
+                    </td>
+
+                    <td>
+                        {{ supplier.phone|default:"—" }}
+                    </td>
+
+                    <td>
+                        <span class="table-muted">
+                            {{ supplier.tax_id|default:"—" }}
+                        </span>
+                    </td>
+
+                    <td>
+                        {% if supplier.is_active %}
+                            <span class="status-badge status-active">
+                                Active
+                            </span>
+                        {% else %}
+                            <span class="status-badge status-inactive">
+                                Inactive
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td class="table-actions">
+                        {% if perms.partners.change_supplier %}
+                            <a
+                                href="{% url 'partners_web:supplier-update' supplier.id %}"
+                                class="table-action-link"
+                            >
+                                Edit
+                            </a>
+                        {% endif %}
+                    </td>
+
+                </tr>
+
+            {% empty %}
+
+                <tr>
+                    <td
+                        colspan="7"
+                        class="table-empty"
+                    >
+                        No suppliers found.
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+{% if page_obj.paginator.num_pages > 1 %}
+
+<div class="pagination-bar">
+
+    <div class="pagination-summary">
+        Showing
+        {{ page_obj.start_index }}
+        –
+        {{ page_obj.end_index }}
+        of
+        {{ page_obj.paginator.count }}
+    </div>
+
+    <div class="pagination">
+
+        {% if page_obj.has_previous %}
+            <a
+                hx-get="?page={{ page_obj.previous_page_number }}&search={{ search }}&status={{ selected_status }}"
+                hx-target="#suppliers-table"
+                hx-push-url="true"
+                class="pagination-button"
+            >
+                ‹
+            </a>
+        {% endif %}
+
+        <span class="pagination-button pagination-active">
+            {{ page_obj.number }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a
+                hx-get="?page={{ page_obj.next_page_number }}&search={{ search }}&status={{ selected_status }}"
+                hx-target="#suppliers-table"
+                hx-push-url="true"
+                class="pagination-button"
+            >
+                ›
+            </a>
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endif %}

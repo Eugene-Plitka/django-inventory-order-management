@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ page_title }}
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">
+            {{ page_title }}
+        </h1>
+
+        <p class="page-subtitle">
+            {{ page_subtitle }}
+        </p>
+    </div>
+
+    <div class="page-header-actions">
+        <a
+            href="{% url 'inventory_web:warehouse-list' %}"
+            class="button button-secondary"
+        >
+            Back to Warehouses
+        </a>
+    </div>
+</div>
+
+
+<div class="form-layout">
+
+    <form
+        method="post"
+        class="card form-card"
+    >
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="form-errors">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+
+        <div class="form-section">
+
+            <div class="form-section-header">
+                <h2>
+                    Warehouse Information
+                </h2>
+
+                <p>
+                    Inventory location and availability settings.
+                </p>
+            </div>
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="{{ form.name.id_for_label }}">
+                        Name
+                    </label>
+
+                    {{ form.name }}
+
+                    {% for error in form.name.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+
+                <div class="form-group">
+                    <label for="{{ form.code.id_for_label }}">
+                        Code
+                    </label>
+
+                    {{ form.code }}
+
+                    {% for error in form.code.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+
+                <div class="form-group form-group-full">
+                    <label for="{{ form.address.id_for_label }}">
+                        Address
+                    </label>
+
+                    {{ form.address }}
+
+                    {% for error in form.address.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+
+                <div class="form-group form-group-checkbox">
+                    <label class="checkbox-label">
+                        {{ form.is_active }}
+
+                        <span>
+                            Warehouse is active
+                        </span>
+                    </label>
+
+                    {% for error in form.is_active.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-actions">
+
+            <a
+                href="{% url 'inventory_web:warehouse-list' %}"
+                class="button button-secondary"
+            >
+                Cancel
+            </a>
+
+            <button
+                type="submit"
+                class="button button-primary"
+            >
+                {{ submit_label }}
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

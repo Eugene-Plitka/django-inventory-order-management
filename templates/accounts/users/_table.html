@@ -1,0 +1,192 @@
+<div class="table-wrapper">
+
+    <table class="data-table">
+
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Last Login</th>
+                <th></th>
+            </tr>
+        </thead>
+
+
+        <tbody>
+
+            {% for user in page_obj %}
+
+                <tr>
+
+                    <td>
+
+                        <strong class="product-table-name">
+                            {{ user.email }}
+                        </strong>
+
+                    </td>
+
+
+                    <td>
+
+                        {% if user.first_name or user.last_name %}
+                            {{ user.first_name }}
+                            {{ user.last_name }}
+                        {% else %}
+                            <span class="table-muted">
+                                —
+                            </span>
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        {% if user.is_superuser %}
+
+                            <span class="status-badge status-confirmed">
+                                Administrator
+                            </span>
+
+                        {% else %}
+
+                            {% with role=user.groups.first %}
+
+                                {% if role %}
+                                    <span class="status-badge status-draft">
+                                        {{ role.name }}
+                                    </span>
+                                {% else %}
+                                    <span class="table-muted">
+                                        No role
+                                    </span>
+                                {% endif %}
+
+                            {% endwith %}
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        {% if user.is_active %}
+
+                            <span class="status-badge status-active">
+                                Active
+                            </span>
+
+                        {% else %}
+
+                            <span class="status-badge status-inactive">
+                                Inactive
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td class="table-muted">
+
+                        {% if user.last_login %}
+                            {{ user.last_login|date:"M d, Y H:i" }}
+                        {% else %}
+                            Never
+                        {% endif %}
+
+                    </td>
+
+
+                    <td class="table-actions">
+
+                        <a
+                            href="{% url 'accounts_web:user-update' user.id %}"
+                            class="table-action-link"
+                        >
+                            Edit
+                        </a>
+
+                    </td>
+
+                </tr>
+
+            {% empty %}
+
+                <tr>
+                    <td
+                        colspan="6"
+                        class="table-empty"
+                    >
+                        No users found.
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+{% if page_obj.paginator.num_pages > 1 %}
+
+<div class="pagination-bar">
+
+    <div class="pagination-summary">
+
+        Showing
+        {{ page_obj.start_index }}
+        –
+        {{ page_obj.end_index }}
+        of
+        {{ page_obj.paginator.count }}
+
+    </div>
+
+
+    <div class="pagination">
+
+        {% if page_obj.has_previous %}
+
+            <a
+                hx-get="?page={{ page_obj.previous_page_number }}&search={{ search }}&status={{ selected_status }}"
+                hx-target="#users-table"
+                hx-push-url="true"
+                class="pagination-button"
+            >
+                ‹
+            </a>
+
+        {% endif %}
+
+
+        <span class="pagination-button pagination-active">
+            {{ page_obj.number }}
+        </span>
+
+
+        {% if page_obj.has_next %}
+
+            <a
+                hx-get="?page={{ page_obj.next_page_number }}&search={{ search }}&status={{ selected_status }}"
+                hx-target="#users-table"
+                hx-push-url="true"
+                class="pagination-button"
+            >
+                ›
+            </a>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endif %}

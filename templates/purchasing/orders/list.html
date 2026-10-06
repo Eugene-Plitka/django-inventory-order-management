@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Purchase Orders
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+        <h1 class="page-title">
+            Purchase Orders
+        </h1>
+
+        <p class="page-subtitle">
+            Manage supplier orders and incoming inventory.
+        </p>
+    </div>
+
+
+    <div class="page-header-actions">
+
+        {% if can_manage_purchase %}
+
+            <a
+                href="{% url 'purchasing_web:purchase-order-create' %}"
+                class="button button-primary"
+            >
+                + New Purchase Order
+            </a>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<div class="card catalog-panel">
+
+    <form
+        class="product-filters order-filters"
+        hx-get="{% url 'purchasing_web:purchase-order-list' %}"
+        hx-target="#purchase-orders-table"
+        hx-push-url="true"
+        hx-trigger="change, submit"
+    >
+
+        <div class="filter-search">
+
+            <span class="filter-search-icon">
+                ⌕
+            </span>
+
+            <input
+                type="search"
+                name="search"
+                value="{{ search }}"
+                placeholder="Search order, supplier or warehouse..."
+                hx-get="{% url 'purchasing_web:purchase-order-list' %}"
+                hx-target="#purchase-orders-table"
+                hx-push-url="true"
+                hx-trigger="keyup changed delay:350ms"
+                hx-include="closest form"
+            >
+
+        </div>
+
+
+        <select name="status">
+
+            <option value="">
+                All statuses
+            </option>
+
+            {% for value, label in statuses %}
+
+                <option
+                    value="{{ value }}"
+                    {% if selected_status == value %}
+                        selected
+                    {% endif %}
+                >
+                    {{ label }}
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+    </form>
+
+
+    <div id="purchase-orders-table">
+
+        {% include "purchasing/orders/_table.html" %}
+
+    </div>
+
+</div>
+
+{% endblock %}

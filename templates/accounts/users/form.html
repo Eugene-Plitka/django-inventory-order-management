@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ page_title }}
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+        <h1 class="page-title">
+            {{ page_title }}
+        </h1>
+
+        <p class="page-subtitle">
+            {{ page_subtitle }}
+        </p>
+    </div>
+
+    <div class="page-header-actions">
+
+        <a
+            href="{% url 'accounts_web:user-list' %}"
+            class="button button-secondary"
+        >
+            Back to Users
+        </a>
+
+    </div>
+
+</div>
+
+
+<div class="form-layout">
+
+    <form
+        method="post"
+        class="card form-card"
+    >
+
+        {% csrf_token %}
+
+
+        {% if form.non_field_errors %}
+
+            <div class="form-errors">
+                {{ form.non_field_errors }}
+            </div>
+
+        {% endif %}
+
+
+        <div class="form-section">
+
+            <div class="form-section-header">
+
+                <h2>
+                    User Information
+                </h2>
+
+                <p>
+                    Account details and application role.
+                </p>
+
+            </div>
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="{{ form.email.id_for_label }}">
+                        Email
+                    </label>
+
+                    {{ form.email }}
+
+                    {% for error in form.email.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.role.id_for_label }}">
+                        Role
+                    </label>
+
+                    {{ form.role }}
+
+                    {% for error in form.role.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.first_name.id_for_label }}">
+                        First Name
+                    </label>
+
+                    {{ form.first_name }}
+
+                    {% for error in form.first_name.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.last_name.id_for_label }}">
+                        Last Name
+                    </label>
+
+                    {{ form.last_name }}
+
+                    {% for error in form.last_name.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+
+                </div>
+
+
+                {% if form.password %}
+
+                    <div class="form-group form-group-full">
+
+                        <label for="{{ form.password.id_for_label }}">
+                            Password
+                        </label>
+
+                        {{ form.password }}
+
+                        <div class="form-help">
+                            This password is used for the initial login.
+                        </div>
+
+                        {% for error in form.password.errors %}
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+
+                <div class="form-group form-group-checkbox">
+
+                    <label class="checkbox-label">
+
+                        {{ form.is_active }}
+
+                        <span>
+                            User is active
+                        </span>
+
+                    </label>
+
+                    {% for error in form.is_active.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-actions">
+
+            <a
+                href="{% url 'accounts_web:user-list' %}"
+                class="button button-secondary"
+            >
+                Cancel
+            </a>
+
+            <button
+                type="submit"
+                class="button button-primary"
+            >
+                {{ submit_label }}
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

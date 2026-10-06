@@ -1,0 +1,145 @@
+<div class="table-wrapper">
+
+    <table class="data-table">
+
+        <thead>
+            <tr>
+                <th>Order</th>
+                <th>Customer</th>
+                <th>Warehouse</th>
+                <th>Items</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for order in page_obj %}
+
+                <tr>
+
+                    <td>
+                        <a
+                            href="{% url 'sales_web:sales-order-detail' order.id %}"
+                            class="order-number-link"
+                        >
+                            {{ order.order_number }}
+                        </a>
+                    </td>
+
+
+                    <td>
+                        <strong class="product-table-name">
+                            {{ order.customer.name }}
+                        </strong>
+                    </td>
+
+
+                    <td>
+                        <span class="product-sku">
+                            {{ order.warehouse.code }}
+                        </span>
+                    </td>
+
+
+                    <td>
+                        {{ order.items.count }}
+                    </td>
+
+
+                    <td>
+                        <span
+                            class="status-badge status-{{ order.status|lower }}"
+                        >
+                            {{ order.get_status_display }}
+                        </span>
+                    </td>
+
+
+                    <td class="table-muted">
+                        {{ order.created_at|date:"M d, Y H:i" }}
+                    </td>
+
+
+                    <td class="table-actions">
+                        <a
+                            href="{% url 'sales_web:sales-order-detail' order.id %}"
+                            class="table-action-link"
+                        >
+                            View
+                        </a>
+                    </td>
+
+                </tr>
+
+            {% empty %}
+
+                <tr>
+                    <td
+                        colspan="7"
+                        class="table-empty"
+                    >
+                        No sales orders found.
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+{% if page_obj.paginator.num_pages > 1 %}
+
+<div class="pagination-bar">
+
+    <div class="pagination-summary">
+        Showing
+        {{ page_obj.start_index }}
+        –
+        {{ page_obj.end_index }}
+        of
+        {{ page_obj.paginator.count }}
+    </div>
+
+
+    <div class="pagination">
+
+        {% if page_obj.has_previous %}
+            <a
+                hx-get="?page={{ page_obj.previous_page_number }}&search={{ search }}&status={{ selected_status }}"
+                hx-target="#sales-orders-table"
+                hx-push-url="true"
+                class="pagination-button"
+            >
+                ‹
+            </a>
+        {% endif %}
+
+
+        <span class="pagination-button pagination-active">
+            {{ page_obj.number }}
+        </span>
+
+
+        {% if page_obj.has_next %}
+            <a
+                hx-get="?page={{ page_obj.next_page_number }}&search={{ search }}&status={{ selected_status }}"
+                hx-target="#sales-orders-table"
+                hx-push-url="true"
+                class="pagination-button"
+            >
+                ›
+            </a>
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endif %}

@@ -26,8 +26,38 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
+from .views import dashboard
+
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path(
+        "",
+        include("catalog.web_urls"),
+    ),
+    path(
+        "",
+        include("partners.web_urls"),
+    ),
+    path(
+        "",
+        include("inventory.web_urls"),
+    ),
+    path(
+        "",
+        include("sales.web_urls"),
+    ),
+    path(
+        "",
+        include("purchasing.web_urls"),
+    ),
+    path(
+        "",
+        include("accounts.web_urls"),
+    ),
+    path(
+        "",
+        include("notifications.urls"),
+    ),
     path(
         "api/auth/login/",
         TokenObtainPairView.as_view(),
@@ -47,6 +77,11 @@ urlpatterns = [
         "api/docs/",
         SpectacularSwaggerView.as_view(url_name="schema"),
         name="swagger-ui",
+    ),
+    path(
+        "",
+        dashboard,
+        name="dashboard",
     ),
     path("api/", include("purchasing.urls")),
     path("api/", include("sales.urls")),

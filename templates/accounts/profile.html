@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Profile
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+        <h1 class="page-title">
+            Profile
+        </h1>
+
+        <p class="page-subtitle">
+            Manage your personal account information.
+        </p>
+    </div>
+
+</div>
+
+
+{% if messages %}
+
+    {% for message in messages %}
+
+        <div
+            class="
+                alert
+                {% if message.tags == 'error' %}
+                    alert-error
+                {% else %}
+                    alert-success
+                {% endif %}
+            "
+        >
+            {{ message }}
+        </div>
+
+    {% endfor %}
+
+{% endif %}
+
+
+<div class="profile-grid">
+
+    <div class="card profile-summary-card">
+
+        <div class="profile-avatar-large">
+            {{ request.user.email|first|upper }}
+        </div>
+
+
+        <div class="profile-summary-info">
+
+            <h2>
+                {% if request.user.first_name or request.user.last_name %}
+                    {{ request.user.first_name }}
+                    {{ request.user.last_name }}
+                {% else %}
+                    {{ request.user.email }}
+                {% endif %}
+            </h2>
+
+            <span>
+                {{ request.user.email }}
+            </span>
+
+        </div>
+
+
+        <div class="profile-meta">
+
+            <div>
+                <span>
+                    Role
+                </span>
+
+                <strong>
+                    {% if current_user_role %}
+                        {{ current_user_role }}
+                    {% else %}
+                        User
+                    {% endif %}
+                </strong>
+            </div>
+
+
+            <div>
+                <span>
+                    Account Status
+                </span>
+
+                <strong>
+                    {% if request.user.is_active %}
+                        Active
+                    {% else %}
+                        Inactive
+                    {% endif %}
+                </strong>
+            </div>
+
+
+            <div>
+                <span>
+                    Last Login
+                </span>
+
+                <strong>
+                    {% if request.user.last_login %}
+                        {{ request.user.last_login|date:"M d, Y H:i" }}
+                    {% else %}
+                        Never
+                    {% endif %}
+                </strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="profile-main">
+
+        <form
+            method="post"
+            class="card form-card"
+        >
+            {% csrf_token %}
+
+            <input
+                type="hidden"
+                name="action"
+                value="update-profile"
+            >
+
+
+            <div class="form-section">
+
+                <div class="form-section-header">
+
+                    <h2>
+                        Personal Information
+                    </h2>
+
+                    <p>
+                        Update your display name.
+                    </p>
+
+                </div>
+
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label for="{{ profile_form.first_name.id_for_label }}">
+                            First Name
+                        </label>
+
+                        {{ profile_form.first_name }}
+
+                        {% for error in profile_form.first_name.errors %}
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="{{ profile_form.last_name.id_for_label }}">
+                            Last Name
+                        </label>
+
+                        {{ profile_form.last_name }}
+
+                        {% for error in profile_form.last_name.errors %}
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <div class="form-group form-group-full">
+
+                        <label>
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            class="form-control"
+                            value="{{ request.user.email }}"
+                            disabled
+                        >
+
+                        <div class="form-help">
+                            Email can be changed by an Administrator.
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    type="submit"
+                    class="button button-primary"
+                >
+                    Save Profile
+                </button>
+
+            </div>
+
+        </form>
+
+
+        <form
+            method="post"
+            class="card form-card"
+        >
+            {% csrf_token %}
+
+            <input
+                type="hidden"
+                name="action"
+                value="change-password"
+            >
+
+
+            {% if password_form.non_field_errors %}
+
+                <div class="form-errors">
+                    {{ password_form.non_field_errors }}
+                </div>
+
+            {% endif %}
+
+
+            <div class="form-section">
+
+                <div class="form-section-header">
+
+                    <h2>
+                        Change Password
+                    </h2>
+
+                    <p>
+                        Update the password used to sign in.
+                    </p>
+
+                </div>
+
+
+                <div class="form-grid">
+
+                    <div class="form-group form-group-full">
+
+                        <label for="{{ password_form.old_password.id_for_label }}">
+                            Current Password
+                        </label>
+
+                        {{ password_form.old_password }}
+
+                        {% for error in password_form.old_password.errors %}
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="{{ password_form.new_password1.id_for_label }}">
+                            New Password
+                        </label>
+
+                        {{ password_form.new_password1 }}
+
+                        {% for error in password_form.new_password1.errors %}
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="{{ password_form.new_password2.id_for_label }}">
+                            Confirm New Password
+                        </label>
+
+                        {{ password_form.new_password2 }}
+
+                        {% for error in password_form.new_password2.errors %}
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    type="submit"
+                    class="button button-primary"
+                >
+                    Change Password
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,178 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Sign In · Inventory Management
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/app.css' %}"
+    >
+
+</head>
+
+
+<body class="auth-page">
+
+    <div class="auth-layout">
+
+        <div class="auth-brand-panel">
+
+            <div class="auth-brand">
+
+                <div class="auth-logo">
+                    IM
+                </div>
+
+                <div>
+                    <strong>
+                        Inventory Management
+                    </strong>
+
+                    <span>
+                        Operations Platform
+                    </span>
+                </div>
+
+            </div>
+
+
+            <div class="auth-brand-content">
+
+                <span class="auth-eyebrow">
+                    Inventory + Order Management
+                </span>
+
+                <h1>
+                    Manage inventory,
+                    sales and purchasing
+                    from one workspace.
+                </h1>
+
+                <p>
+                    Track warehouse stock,
+                    customer orders,
+                    supplier deliveries
+                    and inventory movements.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <main class="auth-form-panel">
+
+            <div class="auth-form-container">
+
+                <div class="auth-form-header">
+
+                    <h2>
+                        Sign in
+                    </h2>
+
+                    <p>
+                        Enter your account credentials
+                        to continue.
+                    </p>
+
+                </div>
+
+
+                {% if form.non_field_errors %}
+
+                    <div class="alert alert-error">
+
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+
+                <form method="post">
+
+                    {% csrf_token %}
+
+
+                    {% if next %}
+                        <input
+                            type="hidden"
+                            name="next"
+                            value="{{ next }}"
+                        >
+                    {% endif %}
+
+
+                    <div class="form-group auth-form-group">
+
+                        <label for="{{ form.username.id_for_label }}">
+                            Email
+                        </label>
+
+                        {{ form.username }}
+
+                        {% for error in form.username.errors %}
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <div class="form-group auth-form-group">
+
+                        <label for="{{ form.password.id_for_label }}">
+                            Password
+                        </label>
+
+                        {{ form.password }}
+
+                        {% for error in form.password.errors %}
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="button button-primary auth-submit"
+                    >
+                        Sign In
+                    </button>
+
+                </form>
+
+
+                <div class="auth-form-footer">
+                    Inventory & Order Management System
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>

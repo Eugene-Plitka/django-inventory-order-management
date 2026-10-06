@@ -1,0 +1,224 @@
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-logo">
+            D
+        </div>
+
+        <div>
+            <div class="brand-title">
+                Django Inventory
+            </div>
+
+            <div class="brand-subtitle">
+                Auto Parts Wholesale
+            </div>
+        </div>
+    </div>
+
+    <nav class="sidebar-nav">
+        <a
+            href="/"
+            class="
+                sidebar-link
+                {% if request.path == '/' %}
+                    sidebar-link-active
+                {% endif %}
+            "
+        >
+            <span class="sidebar-icon">⌂</span>
+            <span>Dashboard</span>
+        </a>
+
+        {% if perms.catalog.view_product %}
+            <a
+                href="{% url 'catalog_web:product-list' %}"
+                class="
+                    sidebar-link
+                    {% if request.path|slice:':10' == '/products/' %}
+                        sidebar-link-active
+                    {% endif %}
+                "
+            >
+                <span class="sidebar-icon">□</span>
+                <span>Products</span>
+            </a>
+        {% endif %}
+
+        {% if perms.catalog.view_category %}
+            <a
+                href="{% url 'catalog_web:category-list' %}"
+                class="
+                    sidebar-link
+                    {% if request.path|slice:':12' == '/categories/' %}
+                        sidebar-link-active
+                    {% endif %}
+                "
+            >
+                <span class="sidebar-icon">▦</span>
+                <span>Categories</span>
+            </a>
+        {% endif %}
+
+        {% if perms.catalog.view_manufacturer %}
+            <a
+                href="{% url 'catalog_web:manufacturer-list' %}"
+                class="
+                    sidebar-link
+                    {% if request.path|slice:':15' == '/manufacturers/' %}
+                        sidebar-link-active
+                    {% endif %}
+                "
+            >
+                <span class="sidebar-icon">▥</span>
+                <span>Manufacturers</span>
+            </a>
+        {% endif %}
+
+        {% if perms.partners.view_customer %}
+            <a
+                href="{% url 'partners_web:customer-list' %}"
+                class="
+                    sidebar-link
+                    {% if request.path|slice:':11' == '/customers/' %}
+                        sidebar-link-active
+                    {% endif %}
+                "
+            >
+                <span class="sidebar-icon">◉</span>
+                <span>Customers</span>
+            </a>
+        {% endif %}
+
+        {% if perms.partners.view_supplier %}
+            <a
+                href="{% url 'partners_web:supplier-list' %}"
+                class="
+                    sidebar-link
+                    {% if request.path|slice:':11' == '/suppliers/' %}
+                        sidebar-link-active
+                    {% endif %}
+                "
+            >
+                <span class="sidebar-icon">▣</span>
+                <span>Suppliers</span>
+            </a>
+        {% endif %}
+
+        {% if perms.inventory.view_warehouse %}
+            <a
+                href="{% url 'inventory_web:warehouse-list' %}"
+                class="
+                    sidebar-link
+                    {% if request.path|slice:':12' == '/warehouses/' %}
+                        sidebar-link-active
+                    {% endif %}
+                "
+            >
+                <span class="sidebar-icon">⌂</span>
+                <span>Warehouses</span>
+            </a>
+        {% endif %}
+
+        {% if perms.inventory.view_stock %}
+            <a
+                href="{% url 'inventory_web:stock-list' %}"
+                class="
+                    sidebar-link
+                    {% if request.path|slice:':7' == '/stock/' %}
+                        sidebar-link-active
+                    {% endif %}
+                "
+            >
+                <span class="sidebar-icon">▤</span>
+                <span>Stock</span>
+            </a>
+        {% endif %}
+
+        {% if perms.inventory.view_stockreservation %}
+            <a
+                href="{% url 'inventory_web:reservation-list' %}"
+                class="
+                    sidebar-link
+                    {% if request.path|slice:':14' == '/reservations/' %}
+                        sidebar-link-active
+                    {% endif %}
+                "
+            >
+                <span class="sidebar-icon">◫</span>
+                <span>Reservations</span>
+            </a>
+        {% endif %}
+
+        {% if perms.inventory.view_stockmovement %}
+            <a
+                href="{% url 'inventory_web:movement-list' %}"
+                class="
+                    sidebar-link
+                    {% if request.path|slice:':17' == '/stock-movements/' %}
+                        sidebar-link-active
+                    {% endif %}
+                "
+            >
+                <span class="sidebar-icon">↕</span>
+                <span>Stock Movements</span>
+            </a>
+        {% endif %}
+
+        {% if perms.sales.view_salesorder %}
+            <a
+                href="{% url 'sales_web:sales-order-list' %}"
+                class="
+                    sidebar-link
+                    {% if request.path|slice:':14' == '/sales-orders/' %}
+                        sidebar-link-active
+                    {% endif %}
+                "
+            >
+                <span class="sidebar-icon">▧</span>
+                <span>Sales Orders</span>
+            </a>
+        {% endif %}
+
+        {% if perms.purchasing.view_purchaseorder %}
+            <a
+                href="{% url 'purchasing_web:purchase-order-list' %}"
+                class="
+                    sidebar-link
+                    {% if request.path|slice:':17' == '/purchase-orders/' %}
+                        sidebar-link-active
+                    {% endif %}
+                "
+            >
+                <span class="sidebar-icon">▨</span>
+                <span>Purchase Orders</span>
+            </a>
+        {% endif %}
+
+        {% if current_user_role == "Administrator" %}
+
+            <a
+                href="{% url 'accounts_web:user-list' %}"
+                class="
+                    sidebar-link
+                    {% if request.path|slice:':7' == '/users/' %}
+                        sidebar-link-active
+                    {% endif %}
+                "
+            >
+                <span class="sidebar-icon">
+                    ◉
+                </span>
+
+                <span>
+                    Users & Roles
+                </span>
+            </a>
+
+        {% endif %}
+
+        <a href="#" class="sidebar-link">
+            <span class="sidebar-icon">⚙</span>
+            <span>Settings</span>
+        </a>
+    </nav>
+</aside>

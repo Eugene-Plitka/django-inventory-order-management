@@ -9,6 +9,12 @@ from inventory.models import (
     StockMovement,
     StockReservation,
 )
+from notifications.services import (
+    notify_low_stock,
+    notify_sales_order_confirmed,
+    notify_sales_order_shipped,
+    schedule_notification,
+)
 
 from .exceptions import (
     InsufficientStock,
@@ -151,6 +157,11 @@ def confirm_sales_order(*, order_id):
         )
     )
 
+    schedule_notification(
+        notify_sales_order_confirmed,
+        order,
+    )
+
     return order
 
 
@@ -260,6 +271,12 @@ def ship_sales_order(*, order_id, performed_by):
             )
         )
 
+        if stock.quantity <= stock.reorder_level:
+            schedule_notification(
+                notify_low_stock,
+                stock,
+            )
+
         StockMovement.objects.create(
             stock=stock,
             movement_type=StockMovement.MovementType.SALES_SHIPMENT,
@@ -280,6 +297,11 @@ def ship_sales_order(*, order_id, performed_by):
             "shipped_at",
             "updated_at",
         )
+    )
+
+    schedule_notification(
+        notify_sales_order_shipped,
+        order,
     )
 
     return order

@@ -1,0 +1,255 @@
+<header class="topbar">
+
+    <div
+        class="topbar-search global-search"
+        x-data="{ open: false }"
+        @click.outside="open = false"
+    >
+
+        <span class="search-icon">
+            ⌕
+        </span>
+
+        <input
+            type="search"
+            name="q"
+            placeholder="Search products, orders, customers, suppliers..."
+            autocomplete="off"
+            hx-get="{% url 'accounts_web:global-search' %}"
+            hx-trigger="keyup changed delay:300ms"
+            hx-target="#global-search-results"
+            hx-include="this"
+            @focus="open = true"
+            @input="open = true"
+        >
+
+        <div
+            id="global-search-results"
+            class="global-search-results"
+            x-show="open"
+            x-cloak
+        ></div>
+
+    </div>
+
+
+    <div class="topbar-actions">
+
+        <div
+            class="notification-menu"
+            x-data="{ open: false }"
+        >
+
+            <button
+                type="button"
+                class="notification-button"
+                @click="open = !open"
+            >
+                ♢
+
+                {% if unread_notifications_count %}
+                    <span class="notification-badge">
+                        {{ unread_notifications_count }}
+                    </span>
+                {% endif %}
+            </button>
+
+
+            <div
+                class="notification-dropdown"
+                x-show="open"
+                @click.outside="open = false"
+                x-cloak
+            >
+
+                <div class="notification-dropdown-header">
+
+                    <div>
+                        <strong>
+                            Notifications
+                        </strong>
+
+                        <span>
+                            {{ unread_notifications_count }}
+                            unread
+                        </span>
+                    </div>
+
+
+                    {% if unread_notifications_count %}
+
+                        <form
+                            method="post"
+                            action="{% url 'notifications:read-all' %}"
+                        >
+                            {% csrf_token %}
+
+                            <input
+                                type="hidden"
+                                name="next"
+                                value="{{ request.path }}"
+                            >
+
+                            <button
+                                type="submit"
+                                class="notification-read-all"
+                            >
+                                Mark all read
+                            </button>
+
+                        </form>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="notification-list">
+
+                    {% for notification in topbar_notifications %}
+
+                        <form
+                            method="post"
+                            action="{% url 'notifications:open' notification.pk %}"
+                        >
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="
+                                    notification-item
+                                    {% if not notification.is_read %}
+                                        notification-item-unread
+                                    {% endif %}
+                                "
+                            >
+
+                                <strong>
+                                    {{ notification.title }}
+                                </strong>
+
+                                <span>
+                                    {{ notification.message }}
+                                </span>
+
+                                <small>
+                                    {{ notification.created_at|timesince }}
+                                    ago
+                                </small>
+
+                            </button>
+
+                        </form>
+
+                    {% empty %}
+
+                        <div class="notification-empty">
+                            No notifications yet.
+                        </div>
+
+                    {% endfor %}
+                    <div class="notification-dropdown-footer">
+
+                        <a href="{% url 'notifications:list' %}">
+                            View all notifications
+                        </a>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div
+            class="user-menu"
+            x-data="{ open: false }"
+        >
+
+            <button
+                class="user-menu-button"
+                @click="open = !open"
+            >
+
+                <div class="user-avatar">
+
+                    {% if request.user.is_authenticated %}
+                        {{ request.user.email|first|upper }}
+                    {% else %}
+                        G
+                    {% endif %}
+
+                </div>
+
+
+                <div class="user-info">
+
+                    <strong>
+
+                        {% if request.user.is_authenticated %}
+                            {{ request.user.email }}
+                        {% else %}
+                            Guest
+                        {% endif %}
+
+                    </strong>
+
+
+                    <span>
+
+                        {% if current_user_role %}
+                            {{ current_user_role }}
+                        {% else %}
+                            User
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                <span class="user-chevron">
+                    ⌄
+                </span>
+
+            </button>
+
+
+            <div
+                class="user-dropdown"
+                x-show="open"
+                @click.outside="open = false"
+                x-cloak
+            >
+
+                <a href="{% url 'accounts_web:profile' %}">
+                    Profile
+                </a>
+
+
+                {% if request.user.is_authenticated %}
+
+                    <form
+                        method="post"
+                        action="{% url 'accounts_web:logout' %}"
+                    >
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            class="topbar-dropdown-action"
+                        >
+                            Logout
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>

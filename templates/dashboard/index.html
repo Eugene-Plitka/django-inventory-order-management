@@ -1,0 +1,364 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">
+            Dashboard
+        </h1>
+
+        <p class="page-subtitle">
+            Overview of your inventory,
+            sales and purchase operations.
+        </p>
+    </div>
+
+    <div class="page-header-actions">
+        <span class="dashboard-date">
+            Inventory Overview
+        </span>
+    </div>
+</div>
+
+
+<div class="stats-grid">
+
+    {% if can_view_products %}
+
+        <div class="stat-card">
+            <div class="stat-card-content">
+
+                <div>
+                    <div class="stat-label">
+                        Total Products
+                    </div>
+
+                    <div class="stat-value">
+                        {{ total_products }}
+                    </div>
+
+                    <div class="stat-description">
+                        Active products in catalog
+                    </div>
+                </div>
+
+                <div class="stat-icon stat-icon-blue">
+                    P
+                </div>
+
+            </div>
+        </div>
+
+    {% endif %}
+
+
+    {% if can_view_stock %}
+
+        <div class="stat-card">
+            <div class="stat-card-content">
+
+                <div>
+                    <div class="stat-label">
+                        Low Stock Items
+                    </div>
+
+                    <div class="stat-value">
+                        {{ low_stock_count }}
+                    </div>
+
+                    <div class="stat-description">
+                        Require attention
+                    </div>
+                </div>
+
+                <div class="stat-icon stat-icon-orange">
+                    !
+                </div>
+
+            </div>
+        </div>
+
+    {% endif %}
+
+
+    {% if can_view_sales %}
+
+        <div class="stat-card">
+            <div class="stat-card-content">
+
+                <div>
+                    <div class="stat-label">
+                        Open Sales Orders
+                    </div>
+
+                    <div class="stat-value">
+                        {{ open_sales_orders }}
+                    </div>
+
+                    <div class="stat-description">
+                        Awaiting completion
+                    </div>
+                </div>
+
+                <div class="stat-icon stat-icon-green">
+                    S
+                </div>
+
+            </div>
+        </div>
+
+    {% endif %}
+
+
+    {% if can_view_purchases %}
+
+        <div class="stat-card">
+            <div class="stat-card-content">
+
+                <div>
+                    <div class="stat-label">
+                        Open Purchase Orders
+                    </div>
+
+                    <div class="stat-value">
+                        {{ open_purchase_orders }}
+                    </div>
+
+                    <div class="stat-description">
+                        Expected deliveries
+                    </div>
+                </div>
+
+                <div class="stat-icon stat-icon-purple">
+                    PO
+                </div>
+
+            </div>
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+{% if can_view_sales or can_view_stock %}
+
+    <div class="dashboard-grid">
+
+        {% if can_view_sales %}
+
+            <section class="card dashboard-panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h2 class="panel-title">
+                            Recent Sales Orders
+                        </h2>
+
+                        <p class="panel-subtitle">
+                            Latest customer orders
+                        </p>
+                    </div>
+
+                    <a
+                        href="{% url 'sales_web:sales-order-list' %}"
+                        class="panel-link"
+                    >
+                        View all
+                    </a>
+
+                </div>
+
+
+                <div class="table-wrapper">
+
+                    <table class="data-table">
+
+                        <thead>
+                            <tr>
+                                <th>Order</th>
+                                <th>Customer</th>
+                                <th>Warehouse</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for order in recent_sales_orders %}
+
+                                <tr>
+
+                                    <td>
+                                        <a
+                                            href="{% url 'sales_web:sales-order-detail' order.id %}"
+                                            class="order-number-link"
+                                        >
+                                            {{ order.order_number }}
+                                        </a>
+                                    </td>
+
+                                    <td>
+                                        {{ order.customer.name }}
+                                    </td>
+
+                                    <td>
+                                        {{ order.warehouse.code }}
+                                    </td>
+
+                                    <td>
+                                        <span
+                                            class="
+                                                status-badge
+                                                status-{{ order.status|lower }}
+                                            "
+                                        >
+                                            {{ order.get_status_display }}
+                                        </span>
+                                    </td>
+
+                                    <td class="table-muted">
+                                        {{ order.created_at|date:"M d, Y" }}
+                                    </td>
+
+                                </tr>
+
+                            {% empty %}
+
+                                <tr>
+                                    <td
+                                        colspan="5"
+                                        class="table-empty"
+                                    >
+                                        No sales orders yet.
+                                    </td>
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        {% endif %}
+
+
+        {% if can_view_stock %}
+
+            <section class="card dashboard-panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h2 class="panel-title">
+                            Low Stock
+                        </h2>
+
+                        <p class="panel-subtitle">
+                            Items below reorder level
+                        </p>
+                    </div>
+
+                    <a
+                        href="{% url 'inventory_web:stock-list' %}?low_stock=true"
+                        class="panel-link"
+                    >
+                        View stock
+                    </a>
+
+                </div>
+
+
+                <div class="low-stock-list">
+
+                    {% for stock in low_stock_items %}
+
+                        <div class="low-stock-item">
+
+                            <div class="low-stock-product">
+
+                                <div class="product-avatar">
+                                    {{ stock.product.name|first|upper }}
+                                </div>
+
+                                <div>
+
+                                    <div class="low-stock-name">
+                                        {{ stock.product.name }}
+                                    </div>
+
+                                    <div class="low-stock-meta">
+                                        {{ stock.product.sku }}
+                                        ·
+                                        {{ stock.warehouse.code }}
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="low-stock-values">
+
+                                <div>
+                                    <span class="low-stock-quantity">
+                                        {{ stock.available_quantity }}
+                                    </span>
+
+                                    <span class="low-stock-unit">
+                                        available
+                                    </span>
+                                </div>
+
+                                <div class="low-stock-level">
+                                    Reorder at
+                                    {{ stock.reorder_level }}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    {% empty %}
+
+                        <div class="empty-state">
+
+                            <div class="empty-state-icon">
+                                ✓
+                            </div>
+
+                            <strong>
+                                Stock levels look good
+                            </strong>
+
+                            <span>
+                                No products are currently
+                                below their reorder level.
+                            </span>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+        {% endif %}
+
+    </div>
+
+{% endif %}
+
+{% endblock %}

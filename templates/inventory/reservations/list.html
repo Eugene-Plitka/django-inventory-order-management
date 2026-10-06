@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Reservations
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">
+            Reservations
+        </h1>
+
+        <p class="page-subtitle">
+            View inventory reserved for sales orders.
+        </p>
+    </div>
+</div>
+
+
+<div class="card catalog-panel">
+
+    <form
+        class="product-filters partner-filters"
+        hx-get="{% url 'inventory_web:reservation-list' %}"
+        hx-target="#reservations-table"
+        hx-push-url="true"
+        hx-trigger="change, submit"
+    >
+
+        <div class="filter-search">
+            <span class="filter-search-icon">
+                ⌕
+            </span>
+
+            <input
+                type="search"
+                name="search"
+                value="{{ search }}"
+                placeholder="Search product, warehouse or sales order..."
+                hx-get="{% url 'inventory_web:reservation-list' %}"
+                hx-target="#reservations-table"
+                hx-push-url="true"
+                hx-trigger="keyup changed delay:350ms"
+                hx-include="closest form"
+            >
+        </div>
+
+
+        <select name="status">
+            <option value="">
+                All statuses
+            </option>
+
+            {% for value, label in statuses %}
+                <option
+                    value="{{ value }}"
+                    {% if selected_status == value %}
+                        selected
+                    {% endif %}
+                >
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+
+    </form>
+
+
+    <div id="reservations-table">
+        {% include "inventory/reservations/_table.html" %}
+    </div>
+
+</div>
+
+{% endblock %}

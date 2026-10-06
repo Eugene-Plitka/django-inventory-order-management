@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Warehouses
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">
+            Warehouses
+        </h1>
+
+        <p class="page-subtitle">
+            Manage inventory locations and warehouse status.
+        </p>
+    </div>
+
+    <div class="page-header-actions">
+        {% if perms.inventory.add_warehouse %}
+            <a
+                href="{% url 'inventory_web:warehouse-create' %}"
+                class="button button-primary"
+            >
+                + Add Warehouse
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+
+<div class="card catalog-panel">
+
+    <form
+        class="product-filters partner-filters"
+        hx-get="{% url 'inventory_web:warehouse-list' %}"
+        hx-target="#warehouses-table"
+        hx-push-url="true"
+        hx-trigger="change, submit"
+    >
+
+        <div class="filter-search">
+            <span class="filter-search-icon">
+                ⌕
+            </span>
+
+            <input
+                type="search"
+                name="search"
+                value="{{ search }}"
+                placeholder="Search warehouses..."
+                hx-get="{% url 'inventory_web:warehouse-list' %}"
+                hx-target="#warehouses-table"
+                hx-push-url="true"
+                hx-trigger="keyup changed delay:350ms"
+                hx-include="closest form"
+            >
+        </div>
+
+
+        <select name="status">
+            <option value="">
+                All statuses
+            </option>
+
+            <option
+                value="active"
+                {% if selected_status == "active" %}
+                    selected
+                {% endif %}
+            >
+                Active
+            </option>
+
+            <option
+                value="inactive"
+                {% if selected_status == "inactive" %}
+                    selected
+                {% endif %}
+            >
+                Inactive
+            </option>
+        </select>
+
+    </form>
+
+
+    <div id="warehouses-table">
+        {% include "inventory/warehouses/_table.html" %}
+    </div>
+
+</div>
+
+{% endblock %}

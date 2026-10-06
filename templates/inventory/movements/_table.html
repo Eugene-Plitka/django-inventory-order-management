@@ -1,0 +1,143 @@
+<div class="table-wrapper">
+
+    <table class="data-table">
+
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>SKU</th>
+                <th>Product</th>
+                <th>Warehouse</th>
+                <th>Type</th>
+                <th>Quantity</th>
+                <th>Performed By</th>
+                <th>Reason</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for movement in page_obj %}
+
+                <tr>
+
+                    <td class="table-muted">
+                        {{ movement.created_at|date:"M d, Y H:i" }}
+                    </td>
+
+                    <td>
+                        <span class="product-sku">
+                            {{ movement.stock.product.sku }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <strong class="product-table-name">
+                            {{ movement.stock.product.name }}
+                        </strong>
+                    </td>
+
+                    <td>
+                        {{ movement.stock.warehouse.code }}
+                    </td>
+
+                    <td>
+                        <span class="movement-type">
+                            {{ movement.get_movement_type_display }}
+                        </span>
+                    </td>
+
+                    <td>
+                        {% if movement.quantity > 0 %}
+                            <strong class="movement-positive">
+                                +{{ movement.quantity }}
+                            </strong>
+                        {% else %}
+                            <strong class="movement-negative">
+                                {{ movement.quantity }}
+                            </strong>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {{ movement.performed_by.email }}
+                    </td>
+
+                    <td>
+                        <span class="table-muted">
+                            {% if movement.reason %}
+                                {{ movement.reason|truncatechars:55 }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </span>
+                    </td>
+
+                </tr>
+
+            {% empty %}
+
+                <tr>
+                    <td
+                        colspan="8"
+                        class="table-empty"
+                    >
+                        No stock movements found.
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+{% if page_obj.paginator.num_pages > 1 %}
+
+<div class="pagination-bar">
+
+    <div class="pagination-summary">
+        Showing
+        {{ page_obj.start_index }}
+        –
+        {{ page_obj.end_index }}
+        of
+        {{ page_obj.paginator.count }}
+    </div>
+
+    <div class="pagination">
+
+        {% if page_obj.has_previous %}
+            <a
+                hx-get="?page={{ page_obj.previous_page_number }}&search={{ search }}&movement_type={{ selected_movement_type }}"
+                hx-target="#movements-table"
+                hx-push-url="true"
+                class="pagination-button"
+            >
+                ‹
+            </a>
+        {% endif %}
+
+        <span class="pagination-button pagination-active">
+            {{ page_obj.number }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a
+                hx-get="?page={{ page_obj.next_page_number }}&search={{ search }}&movement_type={{ selected_movement_type }}"
+                hx-target="#movements-table"
+                hx-push-url="true"
+                class="pagination-button"
+            >
+                ›
+            </a>
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endif %}

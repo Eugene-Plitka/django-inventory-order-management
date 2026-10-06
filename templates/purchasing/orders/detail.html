@@ -1,0 +1,468 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ order.order_number }}
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <div class="order-title-row">
+
+            <h1 class="page-title">
+                {{ order.order_number }}
+            </h1>
+
+            <span
+                class="status-badge status-{{ order.status|lower }}"
+            >
+                {{ order.get_status_display }}
+            </span>
+
+        </div>
+
+
+        <p class="page-subtitle">
+            Purchase order details and receiving status.
+        </p>
+
+    </div>
+
+
+    <div class="page-header-actions">
+
+        <a
+            href="{% url 'purchasing_web:purchase-order-list' %}"
+            class="button button-secondary"
+        >
+            Back
+        </a>
+
+
+        {% if can_edit %}
+
+            {% if can_edit %}
+                <a
+                    href="{% url 'purchasing_web:purchase-order-update' order.id %}"
+                    class="button button-secondary"
+                >
+                    Edit
+                </a>
+            {% endif %}
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+{% if messages %}
+
+    {% for message in messages %}
+
+        <div
+            class="
+                alert
+                {% if message.tags == 'error' %}
+                    alert-error
+                {% else %}
+                    alert-success
+                {% endif %}
+            "
+        >
+            {{ message }}
+        </div>
+
+    {% endfor %}
+
+{% endif %}
+
+
+<div class="order-layout">
+
+    <div class="order-main">
+
+
+        <div class="card order-info-card">
+
+            <div class="order-info-grid">
+
+                <div class="order-info-item">
+
+                    <span>
+                        Supplier
+                    </span>
+
+                    <strong>
+                        {{ order.supplier.name }}
+                    </strong>
+
+                </div>
+
+
+                <div class="order-info-item">
+
+                    <span>
+                        Warehouse
+                    </span>
+
+                    <strong>
+                        {{ order.warehouse.code }}
+                        —
+                        {{ order.warehouse.name }}
+                    </strong>
+
+                </div>
+
+
+                <div class="order-info-item">
+
+                    <span>
+                        Created by
+                    </span>
+
+                    <strong>
+                        {{ order.created_by.email }}
+                    </strong>
+
+                </div>
+
+
+                <div class="order-info-item">
+
+                    <span>
+                        Created
+                    </span>
+
+                    <strong>
+                        {{ order.created_at|date:"M d, Y H:i" }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card order-section">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h2 class="panel-title">
+                        Order Items
+                    </h2>
+
+                    <p class="panel-subtitle">
+                        Products expected from this supplier.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table class="data-table">
+
+                    <thead>
+                        <tr>
+                            <th>SKU</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for item in items %}
+
+                            <tr>
+
+                                <td>
+
+                                    <span class="product-sku">
+                                        {{ item.product.sku }}
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <strong class="product-table-name">
+                                        {{ item.product.name }}
+                                    </strong>
+
+                                </td>
+
+
+                                <td>
+                                    {{ item.quantity }}
+                                </td>
+
+
+                                <td>
+                                    ${{ item.unit_price|floatformat:2 }}
+                                </td>
+
+
+                                <td>
+
+                                    <strong>
+                                        ${{ item.line_total|floatformat:2 }}
+                                    </strong>
+
+                                </td>
+
+                            </tr>
+
+                        {% empty %}
+
+                            <tr>
+
+                                <td
+                                    colspan="5"
+                                    class="table-empty"
+                                >
+                                    No items.
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="order-total">
+
+                <span>
+                    Order Total
+                </span>
+
+                <strong>
+                    ${{ order_total|floatformat:2 }}
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <aside class="order-sidebar">
+
+
+        <div class="card order-actions-card">
+
+            <div class="order-actions-header">
+
+                <h2>
+                    Order Actions
+                </h2>
+
+                <p>
+                    Available actions depend on current status
+                    and your role.
+                </p>
+
+            </div>
+
+
+            <div class="order-action-list">
+
+
+                {% if can_confirm %}
+
+                    <form
+                        method="post"
+                        action="{% url 'purchasing_web:purchase-order-confirm' order.id %}"
+                    >
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            class="button button-primary order-action-button"
+                        >
+                            Confirm Order
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+
+                {% if can_receive %}
+
+                    <form
+                        method="post"
+                        action="{% url 'purchasing_web:purchase-order-receive' order.id %}"
+                    >
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            class="button button-primary order-action-button"
+                        >
+                            Receive Order
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+
+                {% if can_cancel %}
+
+                    <form
+                        method="post"
+                        action="{% url 'purchasing_web:purchase-order-cancel' order.id %}"
+                    >
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            class="button button-danger order-action-button"
+                        >
+                            Cancel Order
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+
+                {% if not can_confirm and not can_receive and not can_cancel %}
+
+                    <div class="order-no-actions">
+                        No actions are available for this order.
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <div class="card order-timeline-card">
+
+            <h2>
+                Timeline
+            </h2>
+
+
+            <div class="timeline">
+
+                <div class="timeline-item">
+
+                    <span class="timeline-dot"></span>
+
+                    <div>
+
+                        <strong>
+                            Created
+                        </strong>
+
+                        <span>
+                            {{ order.created_at|date:"M d, Y H:i" }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                {% if order.confirmed_at %}
+
+                    <div class="timeline-item">
+
+                        <span class="timeline-dot"></span>
+
+                        <div>
+
+                            <strong>
+                                Confirmed
+                            </strong>
+
+                            <span>
+                                {{ order.confirmed_at|date:"M d, Y H:i" }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+
+                {% if order.received_at %}
+
+                    <div class="timeline-item">
+
+                        <span class="timeline-dot"></span>
+
+                        <div>
+
+                            <strong>
+                                Received
+                            </strong>
+
+                            <span>
+                                {{ order.received_at|date:"M d, Y H:i" }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+
+                {% if order.cancelled_at %}
+
+                    <div class="timeline-item">
+
+                        <span class="timeline-dot timeline-dot-danger"></span>
+
+                        <div>
+
+                            <strong>
+                                Cancelled
+                            </strong>
+
+                            <span>
+                                {{ order.cancelled_at|date:"M d, Y H:i" }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </aside>
+
+</div>
+
+{% endblock %}

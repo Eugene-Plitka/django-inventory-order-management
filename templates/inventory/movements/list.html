@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Stock Movements
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">
+            Stock Movements
+        </h1>
+
+        <p class="page-subtitle">
+            Immutable inventory movement history.
+        </p>
+    </div>
+</div>
+
+
+<div class="card catalog-panel">
+
+    <form
+        class="product-filters partner-filters"
+        hx-get="{% url 'inventory_web:movement-list' %}"
+        hx-target="#movements-table"
+        hx-push-url="true"
+        hx-trigger="change, submit"
+    >
+
+        <div class="filter-search">
+            <span class="filter-search-icon">
+                ⌕
+            </span>
+
+            <input
+                type="search"
+                name="search"
+                value="{{ search }}"
+                placeholder="Search product, warehouse or reason..."
+                hx-get="{% url 'inventory_web:movement-list' %}"
+                hx-target="#movements-table"
+                hx-push-url="true"
+                hx-trigger="keyup changed delay:350ms"
+                hx-include="closest form"
+            >
+        </div>
+
+
+        <select name="movement_type">
+            <option value="">
+                All movement types
+            </option>
+
+            {% for value, label in movement_types %}
+                <option
+                    value="{{ value }}"
+                    {% if selected_movement_type == value %}
+                        selected
+                    {% endif %}
+                >
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+
+    </form>
+
+
+    <div id="movements-table">
+        {% include "inventory/movements/_table.html" %}
+    </div>
+
+</div>
+
+{% endblock %}

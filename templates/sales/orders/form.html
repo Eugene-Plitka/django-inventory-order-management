@@ -1,0 +1,386 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ page_title }}
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">
+            {{ page_title }}
+        </h1>
+
+        <p class="page-subtitle">
+            {{ page_subtitle }}
+        </p>
+    </div>
+
+    <div class="page-header-actions">
+        {% if order %}
+            <a
+                href="{% url 'sales_web:sales-order-detail' order.id %}"
+                class="button button-secondary"
+            >
+                Back to Order
+            </a>
+        {% else %}
+            <a
+                href="{% url 'sales_web:sales-order-list' %}"
+                class="button button-secondary"
+            >
+                Back to Sales Orders
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+
+<form
+    method="post"
+    class="sales-order-form"
+    x-data="salesOrderForm()"
+>
+    {% csrf_token %}
+
+
+    <div class="card form-card order-form-card">
+
+        <div class="form-section">
+
+            <div class="form-section-header">
+                <h2>
+                    Order Information
+                </h2>
+
+                <p>
+                    Select the customer and fulfillment warehouse.
+                </p>
+            </div>
+
+
+            {% if form.non_field_errors %}
+                <div class="form-errors">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="{{ form.customer.id_for_label }}">
+                        Customer
+                    </label>
+
+                    {{ form.customer }}
+
+                    {% for error in form.customer.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+
+                <div class="form-group">
+                    <label for="{{ form.warehouse.id_for_label }}">
+                        Warehouse
+                    </label>
+
+                    {{ form.warehouse }}
+
+                    {% for error in form.warehouse.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card order-items-editor">
+
+        <div class="panel-header">
+
+            <div>
+                <h2 class="panel-title">
+                    Order Items
+                </h2>
+
+                <p class="panel-subtitle">
+                    Add products, quantities and historical sales prices.
+                </p>
+            </div>
+
+
+            <button
+                type="button"
+                class="button button-secondary"
+                @click="addItem()"
+            >
+                + Add Item
+            </button>
+
+        </div>
+
+
+        {{ item_formset.management_form }}
+
+
+        {% if item_formset.non_form_errors %}
+            <div class="form-errors">
+                {{ item_formset.non_form_errors }}
+            </div>
+        {% endif %}
+
+
+        <div
+            id="order-items-container"
+            class="order-items-container"
+        >
+
+            {% for item_form in item_formset %}
+
+                <div class="order-item-row">
+
+                    <div class="order-item-delete-field">
+                        {{ item_form.DELETE }}
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="{{ item_form.product.id_for_label }}">
+                            Product
+                        </label>
+
+                        {{ item_form.product }}
+
+                        {% for error in item_form.product.errors %}
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="{{ item_form.quantity.id_for_label }}">
+                            Quantity
+                        </label>
+
+                        {{ item_form.quantity }}
+
+                        {% for error in item_form.quantity.errors %}
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="{{ item_form.unit_price.id_for_label }}">
+                            Unit Price
+                        </label>
+
+                        {{ item_form.unit_price }}
+
+                        {% for error in item_form.unit_price.errors %}
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <div class="order-item-remove">
+                        <button
+                            type="button"
+                            class="button button-danger"
+                            @click="removeItem($event)"
+                        >
+                            Remove
+                        </button>
+                    </div>
+
+
+                    {% if item_form.non_field_errors %}
+                        <div class="order-item-errors">
+                            {{ item_form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        <template id="empty-order-item">
+
+            <div class="order-item-row">
+
+                <div class="order-item-delete-field">
+                    {{ item_formset.empty_form.DELETE }}
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Product
+                    </label>
+
+                    {{ item_formset.empty_form.product }}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Quantity
+                    </label>
+
+                    {{ item_formset.empty_form.quantity }}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Unit Price
+                    </label>
+
+                    {{ item_formset.empty_form.unit_price }}
+
+                </div>
+
+
+                <div class="order-item-remove">
+
+                    <button
+                        type="button"
+                        class="button button-danger"
+                        @click="removeItem($event)"
+                    >
+                        Remove
+                    </button>
+
+                </div>
+
+            </div>
+
+        </template>
+
+
+        <div class="form-actions">
+
+            {% if order %}
+
+                <a
+                    href="{% url 'sales_web:sales-order-detail' order.id %}"
+                    class="button button-secondary"
+                >
+                    Cancel
+                </a>
+
+            {% else %}
+
+                <a
+                    href="{% url 'sales_web:sales-order-list' %}"
+                    class="button button-secondary"
+                >
+                    Cancel
+                </a>
+
+            {% endif %}
+
+
+            <button
+                type="submit"
+                class="button button-primary"
+            >
+                {{ submit_label }}
+            </button>
+
+        </div>
+
+    </div>
+
+</form>
+
+
+<script>
+    function salesOrderForm() {
+        return {
+            addItem() {
+                const totalForms = document.getElementById(
+                    "id_items-TOTAL_FORMS"
+                );
+
+                const index = parseInt(
+                    totalForms.value,
+                    10
+                );
+
+                const template = document.getElementById(
+                    "empty-order-item"
+                );
+
+                const container = document.getElementById(
+                    "order-items-container"
+                );
+
+                const html = template.innerHTML.replace(
+                    /__prefix__/g,
+                    index
+                );
+
+                container.insertAdjacentHTML(
+                    "beforeend",
+                    html
+                );
+
+                totalForms.value = index + 1;
+            },
+
+            removeItem(event) {
+                const row = event.target.closest(
+                    ".order-item-row"
+                );
+
+                if (!row) {
+                    return;
+                }
+
+                const deleteInput = row.querySelector(
+                    'input[name$="-DELETE"]'
+                );
+
+                if (deleteInput) {
+                    deleteInput.checked = true;
+                }
+
+                row.style.display = "none";
+            },
+        };
+    }
+</script>
+
+{% endblock %}

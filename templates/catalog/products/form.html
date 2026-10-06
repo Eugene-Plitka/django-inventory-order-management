@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ page_title }}
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">
+            {{ page_title }}
+        </h1>
+
+        <p class="page-subtitle">
+            {{ page_subtitle }}
+        </p>
+    </div>
+
+    <div class="page-header-actions">
+        <a
+            href="{% url 'catalog_web:product-list' %}"
+            class="button button-secondary"
+        >
+            Back to Products
+        </a>
+    </div>
+</div>
+
+
+<div class="form-layout">
+
+    <form
+        method="post"
+        class="card form-card"
+    >
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="form-errors">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <div class="form-section">
+
+            <div class="form-section-header">
+                <h2>
+                    Product Information
+                </h2>
+
+                <p>
+                    Basic product details and catalog classification.
+                </p>
+            </div>
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="{{ form.sku.id_for_label }}">
+                        SKU
+                    </label>
+
+                    {{ form.sku }}
+
+                    {% for error in form.sku.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+
+                <div class="form-group">
+                    <label for="{{ form.name.id_for_label }}">
+                        Name
+                    </label>
+
+                    {{ form.name }}
+
+                    {% for error in form.name.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+
+                <div class="form-group">
+                    <label for="{{ form.category.id_for_label }}">
+                        Category
+                    </label>
+
+                    {{ form.category }}
+
+                    {% for error in form.category.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+
+                <div class="form-group">
+                    <label for="{{ form.manufacturer.id_for_label }}">
+                        Manufacturer
+                    </label>
+
+                    {{ form.manufacturer }}
+
+                    {% for error in form.manufacturer.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+
+                <div class="form-group">
+                    <label for="{{ form.sale_price.id_for_label }}">
+                        Sale Price
+                    </label>
+
+                    {{ form.sale_price }}
+
+                    {% for error in form.sale_price.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+
+                <div class="form-group form-group-checkbox">
+                    <label class="checkbox-label">
+                        {{ form.is_active }}
+
+                        <span>
+                            Product is active
+                        </span>
+                    </label>
+
+                    {% for error in form.is_active.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+
+                <div class="form-group form-group-full">
+                    <label for="{{ form.description.id_for_label }}">
+                        Description
+                    </label>
+
+                    {{ form.description }}
+
+                    {% for error in form.description.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-actions">
+
+            <a
+                href="{% url 'catalog_web:product-list' %}"
+                class="button button-secondary"
+            >
+                Cancel
+            </a>
+
+            <button
+                type="submit"
+                class="button button-primary"
+            >
+                {{ submit_label }}
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

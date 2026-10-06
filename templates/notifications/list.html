@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Notifications
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+        <h1 class="page-title">
+            Notifications
+        </h1>
+
+        <p class="page-subtitle">
+            Review account and operational notifications.
+        </p>
+    </div>
+
+
+    <div class="page-header-actions">
+
+        {% if unread_notifications_count %}
+
+            <form
+                method="post"
+                action="{% url 'notifications:read-all' %}"
+            >
+                {% csrf_token %}
+
+                <input
+                    type="hidden"
+                    name="next"
+                    value="{% url 'notifications:list' %}"
+                >
+
+                <button
+                    type="submit"
+                    class="button button-secondary"
+                >
+                    Mark all as read
+                </button>
+
+            </form>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<div class="card notification-page-card">
+
+    <form
+        class="notification-filters"
+        hx-get="{% url 'notifications:list' %}"
+        hx-target="#notification-page-list"
+        hx-push-url="true"
+        hx-trigger="change"
+    >
+
+        <select name="status">
+
+            <option value="">
+                All notifications
+            </option>
+
+            <option
+                value="unread"
+                {% if selected_status == "unread" %}
+                    selected
+                {% endif %}
+            >
+                Unread
+            </option>
+
+            <option
+                value="read"
+                {% if selected_status == "read" %}
+                    selected
+                {% endif %}
+            >
+                Read
+            </option>
+
+        </select>
+
+    </form>
+
+
+    <div id="notification-page-list">
+
+        {% include "notifications/_list.html" %}
+
+    </div>
+
+</div>
+
+{% endblock %}

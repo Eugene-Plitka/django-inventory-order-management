@@ -1,0 +1,147 @@
+<div class="table-wrapper">
+
+    <table class="data-table">
+
+        <thead>
+            <tr>
+                <th>Sales Order</th>
+                <th>SKU</th>
+                <th>Product</th>
+                <th>Warehouse</th>
+                <th>Quantity</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Released</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for reservation in page_obj %}
+
+                <tr>
+
+                    <td>
+                        <span class="product-sku">
+                            {{ reservation.sales_order_item.sales_order.order_number }}
+                        </span>
+                    </td>
+
+                    <td>
+                        {{ reservation.stock.product.sku }}
+                    </td>
+
+                    <td>
+                        <strong class="product-table-name">
+                            {{ reservation.stock.product.name }}
+                        </strong>
+                    </td>
+
+                    <td>
+                        {{ reservation.stock.warehouse.code }}
+                    </td>
+
+                    <td>
+                        <strong>
+                            {{ reservation.quantity }}
+                        </strong>
+                    </td>
+
+                    <td>
+                        {% if reservation.status == "ACTIVE" %}
+                            <span class="status-badge status-confirmed">
+                                Active
+                            </span>
+
+                        {% elif reservation.status == "RELEASED" %}
+                            <span class="status-badge status-inactive">
+                                Released
+                            </span>
+
+                        {% else %}
+                            <span class="status-badge status-shipped">
+                                Consumed
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td class="table-muted">
+                        {{ reservation.created_at|date:"M d, Y H:i" }}
+                    </td>
+
+                    <td class="table-muted">
+                        {% if reservation.released_at %}
+                            {{ reservation.released_at|date:"M d, Y H:i" }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+
+                </tr>
+
+            {% empty %}
+
+                <tr>
+                    <td
+                        colspan="8"
+                        class="table-empty"
+                    >
+                        No reservations found.
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+{% if page_obj.paginator.num_pages > 1 %}
+
+<div class="pagination-bar">
+
+    <div class="pagination-summary">
+        Showing
+        {{ page_obj.start_index }}
+        –
+        {{ page_obj.end_index }}
+        of
+        {{ page_obj.paginator.count }}
+    </div>
+
+    <div class="pagination">
+
+        {% if page_obj.has_previous %}
+            <a
+                hx-get="?page={{ page_obj.previous_page_number }}&search={{ search }}&status={{ selected_status }}"
+                hx-target="#reservations-table"
+                hx-push-url="true"
+                class="pagination-button"
+            >
+                ‹
+            </a>
+        {% endif %}
+
+        <span class="pagination-button pagination-active">
+            {{ page_obj.number }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a
+                hx-get="?page={{ page_obj.next_page_number }}&search={{ search }}&status={{ selected_status }}"
+                hx-target="#reservations-table"
+                hx-push-url="true"
+                class="pagination-button"
+            >
+                ›
+            </a>
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endif %}

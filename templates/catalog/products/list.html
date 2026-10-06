@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Products
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">
+            Products
+        </h1>
+
+        <p class="page-subtitle">
+            Manage product catalog, pricing and availability.
+        </p>
+    </div>
+
+    <div class="page-header-actions">
+        {% if perms.catalog.add_product %}
+            <a
+                href="{% url 'catalog_web:product-create' %}"
+                class="button button-primary"
+            >
+                + Add Product
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+
+<div class="card catalog-panel">
+
+    <form
+        class="product-filters"
+        hx-get="{% url 'catalog_web:product-list' %}"
+        hx-target="#products-table"
+        hx-push-url="true"
+        hx-trigger="change, submit"
+    >
+
+        <div class="filter-search">
+            <span class="filter-search-icon">
+                ⌕
+            </span>
+
+            <input
+                type="search"
+                name="search"
+                value="{{ search }}"
+                placeholder="Search by SKU or product name..."
+                hx-get="{% url 'catalog_web:product-list' %}"
+                hx-target="#products-table"
+                hx-push-url="true"
+                hx-trigger="keyup changed delay:350ms"
+                hx-include="closest form"
+            >
+        </div>
+
+
+        <select name="category">
+            <option value="">
+                All categories
+            </option>
+
+            {% for category in categories %}
+                <option
+                    value="{{ category.id }}"
+                    {% if selected_category == category.id|stringformat:"s" %}
+                        selected
+                    {% endif %}
+                >
+                    {{ category.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+
+        <select name="manufacturer">
+            <option value="">
+                All manufacturers
+            </option>
+
+            {% for manufacturer in manufacturers %}
+                <option
+                    value="{{ manufacturer.id }}"
+                    {% if selected_manufacturer == manufacturer.id|stringformat:"s" %}
+                        selected
+                    {% endif %}
+                >
+                    {{ manufacturer.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+
+        <select name="status">
+            <option value="">
+                All statuses
+            </option>
+
+            <option
+                value="active"
+                {% if selected_status == "active" %}
+                    selected
+                {% endif %}
+            >
+                Active
+            </option>
+
+            <option
+                value="inactive"
+                {% if selected_status == "inactive" %}
+                    selected
+                {% endif %}
+            >
+                Inactive
+            </option>
+        </select>
+
+    </form>
+
+
+    <div id="products-table">
+        {% include "catalog/products/_table.html" %}
+    </div>
+
+</div>
+
+{% endblock %}

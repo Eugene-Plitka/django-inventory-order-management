@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Sales Orders
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">
+            Sales Orders
+        </h1>
+
+        <p class="page-subtitle">
+            Manage customer orders and fulfillment workflow.
+        </p>
+    </div>
+
+    <div class="page-header-actions">
+        {% if can_manage_sales %}
+            <a
+                href="{% url 'sales_web:sales-order-create' %}"
+                class="button button-primary"
+            >
+                + New Sales Order
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+
+<div class="card catalog-panel">
+
+    <form
+        class="product-filters order-filters"
+        hx-get="{% url 'sales_web:sales-order-list' %}"
+        hx-target="#sales-orders-table"
+        hx-push-url="true"
+        hx-trigger="change, submit"
+    >
+
+        <div class="filter-search">
+            <span class="filter-search-icon">
+                ⌕
+            </span>
+
+            <input
+                type="search"
+                name="search"
+                value="{{ search }}"
+                placeholder="Search order, customer or warehouse..."
+                hx-get="{% url 'sales_web:sales-order-list' %}"
+                hx-target="#sales-orders-table"
+                hx-push-url="true"
+                hx-trigger="keyup changed delay:350ms"
+                hx-include="closest form"
+            >
+        </div>
+
+
+        <select name="status">
+            <option value="">
+                All statuses
+            </option>
+
+            {% for value, label in statuses %}
+                <option
+                    value="{{ value }}"
+                    {% if selected_status == value %}
+                        selected
+                    {% endif %}
+                >
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+
+    </form>
+
+
+    <div id="sales-orders-table">
+        {% include "sales/orders/_table.html" %}
+    </div>
+
+</div>
+
+{% endblock %}

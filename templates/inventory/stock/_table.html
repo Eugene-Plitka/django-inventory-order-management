@@ -1,0 +1,196 @@
+<div class="table-wrapper">
+
+    <table class="data-table">
+
+        <thead>
+            <tr>
+                <th>SKU</th>
+                <th>Product</th>
+                <th>Warehouse</th>
+                <th>Physical</th>
+                <th>Reserved</th>
+                <th>Available</th>
+                <th>Reorder Level</th>
+                <th>Status</th>
+
+                {% if is_administrator %}
+                    <th></th>
+                {% endif %}
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for stock in page_obj %}
+
+                <tr>
+
+                    <td>
+                        <span class="product-sku">
+                            {{ stock.product.sku }}
+                        </span>
+                    </td>
+
+
+                    <td>
+                        <div class="product-cell">
+
+                            <div class="product-table-avatar">
+                                {{ stock.product.name|first|upper }}
+                            </div>
+
+                            <div>
+                                <div class="product-table-name">
+                                    {{ stock.product.name }}
+                                </div>
+
+                                <div class="product-table-description">
+                                    {{ stock.product.category.name }}
+                                </div>
+                            </div>
+
+                        </div>
+                    </td>
+
+
+                    <td>
+                        <strong>
+                            {{ stock.warehouse.code }}
+                        </strong>
+
+                        <div class="table-muted">
+                            {{ stock.warehouse.name }}
+                        </div>
+                    </td>
+
+
+                    <td>
+                        <span class="stock-number">
+                            {{ stock.quantity }}
+                        </span>
+                    </td>
+
+
+                    <td>
+                        <span class="stock-number stock-reserved">
+                            {{ stock.reserved_quantity }}
+                        </span>
+                    </td>
+
+
+                    <td>
+                        <strong
+                            class="
+                                stock-number
+                                {% if stock.available_quantity <= stock.reorder_level %}
+                                    stock-low
+                                {% else %}
+                                    stock-good
+                                {% endif %}
+                            "
+                        >
+                            {{ stock.available_quantity }}
+                        </strong>
+                    </td>
+
+
+                    <td>
+                        {{ stock.reorder_level }}
+                    </td>
+
+
+                    <td>
+                        {% if stock.available_quantity <= stock.reorder_level %}
+                            <span class="status-badge stock-status-low">
+                                Low Stock
+                            </span>
+                        {% else %}
+                            <span class="status-badge status-active">
+                                In Stock
+                            </span>
+                        {% endif %}
+                    </td>
+
+
+                    {% if is_administrator %}
+                        <td class="table-actions">
+                            <a
+                                href="{% url 'inventory_web:stock-adjust' stock.id %}"
+                                class="table-action-link"
+                            >
+                                Adjust
+                            </a>
+                        </td>
+                    {% endif %}
+
+                </tr>
+
+            {% empty %}
+
+                <tr>
+                    <td
+                        colspan="{% if is_administrator %}9{% else %}8{% endif %}"
+                        class="table-empty"
+                    >
+                        No stock records found.
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+{% if page_obj.paginator.num_pages > 1 %}
+
+<div class="pagination-bar">
+
+    <div class="pagination-summary">
+        Showing
+        {{ page_obj.start_index }}
+        –
+        {{ page_obj.end_index }}
+        of
+        {{ page_obj.paginator.count }}
+    </div>
+
+
+    <div class="pagination">
+
+        {% if page_obj.has_previous %}
+            <a
+                hx-get="?page={{ page_obj.previous_page_number }}&search={{ search }}&warehouse={{ selected_warehouse }}&low_stock={{ selected_low_stock }}"
+                hx-target="#stock-table"
+                hx-push-url="true"
+                class="pagination-button"
+            >
+                ‹
+            </a>
+        {% endif %}
+
+
+        <span class="pagination-button pagination-active">
+            {{ page_obj.number }}
+        </span>
+
+
+        {% if page_obj.has_next %}
+            <a
+                hx-get="?page={{ page_obj.next_page_number }}&search={{ search }}&warehouse={{ selected_warehouse }}&low_stock={{ selected_low_stock }}"
+                hx-target="#stock-table"
+                hx-push-url="true"
+                class="pagination-button"
+            >
+                ›
+            </a>
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endif %}

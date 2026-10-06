@@ -1,0 +1,238 @@
+{% if query|length >= 2 %}
+
+    <div class="global-search-dropdown">
+
+        {% if has_results %}
+
+            {% if products %}
+
+                <div class="global-search-section">
+
+                    <div class="global-search-section-title">
+                        Products
+                    </div>
+
+                    {% for product in products %}
+
+                        <a
+                            href="{% url 'catalog_web:product-list' %}?search={{ product.sku|urlencode }}"
+                            class="global-search-result"
+                        >
+
+                            <div class="global-search-result-icon">
+                                P
+                            </div>
+
+                            <div class="global-search-result-content">
+
+                                <strong>
+                                    {{ product.name }}
+                                </strong>
+
+                                <span>
+                                    {{ product.sku }}
+                                    ·
+                                    {{ product.manufacturer.name }}
+                                </span>
+
+                            </div>
+
+                        </a>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+
+            {% if customers %}
+
+                <div class="global-search-section">
+
+                    <div class="global-search-section-title">
+                        Customers
+                    </div>
+
+                    {% for customer in customers %}
+
+                        <a
+                            href="{% url 'partners_web:customer-list' %}?search={{ customer.name|urlencode }}"
+                            class="global-search-result"
+                        >
+
+                            <div class="global-search-result-icon">
+                                C
+                            </div>
+
+                            <div class="global-search-result-content">
+
+                                <strong>
+                                    {{ customer.name }}
+                                </strong>
+
+                                <span>
+                                    {% if customer.email %}
+                                        {{ customer.email }}
+                                    {% else %}
+                                        Customer
+                                    {% endif %}
+                                </span>
+
+                            </div>
+
+                        </a>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+
+            {% if suppliers %}
+
+                <div class="global-search-section">
+
+                    <div class="global-search-section-title">
+                        Suppliers
+                    </div>
+
+                    {% for supplier in suppliers %}
+
+                        <a
+                            href="{% url 'partners_web:supplier-list' %}?search={{ supplier.name|urlencode }}"
+                            class="global-search-result"
+                        >
+
+                            <div class="global-search-result-icon">
+                                S
+                            </div>
+
+                            <div class="global-search-result-content">
+
+                                <strong>
+                                    {{ supplier.name }}
+                                </strong>
+
+                                <span>
+                                    {% if supplier.email %}
+                                        {{ supplier.email }}
+                                    {% else %}
+                                        Supplier
+                                    {% endif %}
+                                </span>
+
+                            </div>
+
+                        </a>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+
+            {% if sales_orders %}
+
+                <div class="global-search-section">
+
+                    <div class="global-search-section-title">
+                        Sales Orders
+                    </div>
+
+                    {% for order in sales_orders %}
+
+                        <a
+                            href="{% url 'sales_web:sales-order-detail' order.pk %}"
+                            class="global-search-result"
+                        >
+
+                            <div class="global-search-result-icon">
+                                SO
+                            </div>
+
+                            <div class="global-search-result-content">
+
+                                <strong>
+                                    {{ order.order_number }}
+                                </strong>
+
+                                <span>
+                                    {{ order.customer.name }}
+                                    ·
+                                    {{ order.get_status_display }}
+                                </span>
+
+                            </div>
+
+                        </a>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+
+            {% if purchase_orders %}
+
+                <div class="global-search-section">
+
+                    <div class="global-search-section-title">
+                        Purchase Orders
+                    </div>
+
+                    {% for order in purchase_orders %}
+
+                        <a
+                            href="{% url 'purchasing_web:purchase-order-detail' order.pk %}"
+                            class="global-search-result"
+                        >
+
+                            <div class="global-search-result-icon">
+                                PO
+                            </div>
+
+                            <div class="global-search-result-content">
+
+                                <strong>
+                                    {{ order.order_number }}
+                                </strong>
+
+                                <span>
+                                    {{ order.supplier.name }}
+                                    ·
+                                    {{ order.get_status_display }}
+                                </span>
+
+                            </div>
+
+                        </a>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+        {% else %}
+
+            <div class="global-search-empty">
+
+                <strong>
+                    No results found
+                </strong>
+
+                <span>
+                    Nothing matches "{{ query }}".
+                </span>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+{% endif %}
