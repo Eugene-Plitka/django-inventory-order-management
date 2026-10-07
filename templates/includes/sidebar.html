@@ -1,21 +1,45 @@
 <aside class="sidebar">
+
     <div class="sidebar-brand">
+
         <div class="brand-logo">
-            D
+
+            <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+            >
+                <path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5z"></path>
+                <path d="M12 12 4 7.5"></path>
+                <path d="M12 12l8-4.5"></path>
+                <path d="M12 12v9"></path>
+            </svg>
+
         </div>
 
-        <div>
-            <div class="brand-title">
+
+        <div class="brand-copy">
+
+            <div
+                class="brand-title"
+                title="{{ system_settings.company_name }}"
+            >
                 {{ system_settings.company_name }}
             </div>
 
-            <div class="brand-subtitle">
+            <div
+                class="brand-subtitle"
+                title="{{ system_settings.company_description }}"
+            >
                 {{ system_settings.company_description }}
             </div>
+
         </div>
+
     </div>
 
+
     <nav class="sidebar-nav">
+
         <a
             href="/"
             class="
@@ -25,11 +49,20 @@
                 {% endif %}
             "
         >
-            <span class="sidebar-icon">⌂</span>
+            <span class="sidebar-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3 11.5 12 4l9 7.5"></path>
+                    <path d="M5 10.5V20h14v-9.5"></path>
+                    <path d="M9 20v-6h6v6"></path>
+                </svg>
+            </span>
+
             <span>Dashboard</span>
         </a>
 
+
         {% if perms.catalog.view_product %}
+
             <a
                 href="{% url 'catalog_web:product-list' %}"
                 class="
@@ -39,12 +72,23 @@
                     {% endif %}
                 "
             >
-                <span class="sidebar-icon">□</span>
+                <span class="sidebar-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5z"></path>
+                        <path d="M12 12 4 7.5"></path>
+                        <path d="M12 12l8-4.5"></path>
+                        <path d="M12 12v9"></path>
+                    </svg>
+                </span>
+
                 <span>Products</span>
             </a>
+
         {% endif %}
 
+
         {% if perms.catalog.view_category %}
+
             <a
                 href="{% url 'catalog_web:category-list' %}"
                 class="
@@ -54,12 +98,23 @@
                     {% endif %}
                 "
             >
-                <span class="sidebar-icon">▦</span>
+                <span class="sidebar-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <rect x="4" y="4" width="6" height="6"></rect>
+                        <rect x="14" y="4" width="6" height="6"></rect>
+                        <rect x="4" y="14" width="6" height="6"></rect>
+                        <rect x="14" y="14" width="6" height="6"></rect>
+                    </svg>
+                </span>
+
                 <span>Categories</span>
             </a>
+
         {% endif %}
 
+
         {% if perms.catalog.view_manufacturer %}
+
             <a
                 href="{% url 'catalog_web:manufacturer-list' %}"
                 class="
@@ -69,12 +124,23 @@
                     {% endif %}
                 "
             >
-                <span class="sidebar-icon">▥</span>
+                <span class="sidebar-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 20V9l5 3V8l5 3V5l6 4v11z"></path>
+                        <path d="M8 16h1"></path>
+                        <path d="M12 16h1"></path>
+                        <path d="M16 16h1"></path>
+                    </svg>
+                </span>
+
                 <span>Manufacturers</span>
             </a>
+
         {% endif %}
 
+
         {% if perms.partners.view_customer %}
+
             <a
                 href="{% url 'partners_web:customer-list' %}"
                 class="
@@ -84,12 +150,23 @@
                     {% endif %}
                 "
             >
-                <span class="sidebar-icon">◉</span>
+                <span class="sidebar-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="9" cy="8" r="3"></circle>
+                        <path d="M4 19c0-3 2-5 5-5s5 2 5 5"></path>
+                        <path d="M16 7a3 3 0 0 1 0 6"></path>
+                        <path d="M17 14c2 1 3 2.5 3 5"></path>
+                    </svg>
+                </span>
+
                 <span>Customers</span>
             </a>
+
         {% endif %}
 
+
         {% if perms.partners.view_supplier %}
+
             <a
                 href="{% url 'partners_web:supplier-list' %}"
                 class="
@@ -99,12 +176,23 @@
                     {% endif %}
                 "
             >
-                <span class="sidebar-icon">▣</span>
+                <span class="sidebar-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 20V8h10v12"></path>
+                        <path d="M14 12h6v8"></path>
+                        <path d="M7 12h4"></path>
+                        <path d="M7 16h4"></path>
+                    </svg>
+                </span>
+
                 <span>Suppliers</span>
             </a>
+
         {% endif %}
 
+
         {% if perms.inventory.view_warehouse %}
+
             <a
                 href="{% url 'inventory_web:warehouse-list' %}"
                 class="
@@ -114,12 +202,22 @@
                     {% endif %}
                 "
             >
-                <span class="sidebar-icon">⌂</span>
+                <span class="sidebar-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M3 10 12 4l9 6v10H3z"></path>
+                        <path d="M7 20v-6h10v6"></path>
+                        <path d="M7 10h10"></path>
+                    </svg>
+                </span>
+
                 <span>Warehouses</span>
             </a>
+
         {% endif %}
 
+
         {% if perms.inventory.view_stock %}
+
             <a
                 href="{% url 'inventory_web:stock-list' %}"
                 class="
@@ -129,12 +227,22 @@
                     {% endif %}
                 "
             >
-                <span class="sidebar-icon">▤</span>
+                <span class="sidebar-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <rect x="4" y="5" width="16" height="14" rx="2"></rect>
+                        <path d="M4 10h16"></path>
+                        <path d="M9 14h6"></path>
+                    </svg>
+                </span>
+
                 <span>Stock</span>
             </a>
+
         {% endif %}
 
+
         {% if perms.inventory.view_stockreservation %}
+
             <a
                 href="{% url 'inventory_web:reservation-list' %}"
                 class="
@@ -144,12 +252,23 @@
                     {% endif %}
                 "
             >
-                <span class="sidebar-icon">◫</span>
+                <span class="sidebar-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <rect x="5" y="4" width="14" height="16" rx="2"></rect>
+                        <path d="M8 8h8"></path>
+                        <path d="M8 12h5"></path>
+                        <path d="m14 16 2 2 4-4"></path>
+                    </svg>
+                </span>
+
                 <span>Reservations</span>
             </a>
+
         {% endif %}
 
+
         {% if perms.inventory.view_stockmovement %}
+
             <a
                 href="{% url 'inventory_web:movement-list' %}"
                 class="
@@ -159,12 +278,23 @@
                     {% endif %}
                 "
             >
-                <span class="sidebar-icon">↕</span>
+                <span class="sidebar-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M8 5v14"></path>
+                        <path d="m4 9 4-4 4 4"></path>
+                        <path d="M16 19V5"></path>
+                        <path d="m12 15 4 4 4-4"></path>
+                    </svg>
+                </span>
+
                 <span>Stock Movements</span>
             </a>
+
         {% endif %}
 
+
         {% if perms.sales.view_salesorder %}
+
             <a
                 href="{% url 'sales_web:sales-order-list' %}"
                 class="
@@ -174,12 +304,23 @@
                     {% endif %}
                 "
             >
-                <span class="sidebar-icon">▧</span>
+                <span class="sidebar-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M6 3h9l3 3v15H6z"></path>
+                        <path d="M15 3v4h4"></path>
+                        <path d="M9 11h6"></path>
+                        <path d="M9 15h6"></path>
+                    </svg>
+                </span>
+
                 <span>Sales Orders</span>
             </a>
+
         {% endif %}
 
+
         {% if perms.purchasing.view_purchaseorder %}
+
             <a
                 href="{% url 'purchasing_web:purchase-order-list' %}"
                 class="
@@ -189,10 +330,20 @@
                     {% endif %}
                 "
             >
-                <span class="sidebar-icon">▨</span>
+                <span class="sidebar-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M6 3h9l3 3v15H6z"></path>
+                        <path d="M15 3v4h4"></path>
+                        <path d="M9 12h6"></path>
+                        <path d="m12 9 3 3-3 3"></path>
+                    </svg>
+                </span>
+
                 <span>Purchase Orders</span>
             </a>
+
         {% endif %}
+
 
         {% if current_user_role == "Administrator" %}
 
@@ -206,17 +357,17 @@
                 "
             >
                 <span class="sidebar-icon">
-                    ◉
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="9" cy="8" r="3"></circle>
+                        <path d="M4 19c0-3 2-5 5-5s5 2 5 5"></path>
+                        <path d="M17 11v6"></path>
+                        <path d="M14 14h6"></path>
+                    </svg>
                 </span>
 
-                <span>
-                    Users & Roles
-                </span>
+                <span>Users & Roles</span>
             </a>
 
-        {% endif %}
-
-        {% if current_user_role == "Administrator" %}
 
             <a
                 href="{% url 'core_web:settings' %}"
@@ -228,14 +379,17 @@
                 "
             >
                 <span class="sidebar-icon">
-                    ⚙
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.4 1a7 7 0 0 0-2-1.2L14.2 3h-4.4l-.4 2.7a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.5A7 7 0 0 0 5 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.4-1a7 7 0 0 0 2 1.2l.4 2.7h4.4l.4-2.7a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"></path>
+                    </svg>
                 </span>
 
-                <span>
-                    Settings
-                </span>
+                <span>Settings</span>
             </a>
 
         {% endif %}
+
     </nav>
+
 </aside>

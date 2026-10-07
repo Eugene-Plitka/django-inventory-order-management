@@ -5,11 +5,28 @@ from django.shortcuts import (
     redirect,
     render,
 )
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
 from core.pagination import get_items_per_page
 
 from .models import Notification
+
+
+def _safe_next_url(request):
+    next_url = request.POST.get(
+        "next",
+        "",
+    )
+
+    if next_url and url_has_allowed_host_and_scheme(
+        url=next_url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        return next_url
+
+    return "/notifications/"
 
 
 @login_required
@@ -115,12 +132,7 @@ def mark_notification_read(
 
         notification.save(update_fields=("is_read",))
 
-    return redirect(
-        request.POST.get(
-            "next",
-            "/notifications/",
-        )
-    )
+    return redirect(_safe_next_url(request))
 
 
 @login_required
@@ -133,9 +145,4 @@ def mark_all_notifications_read(
         is_read=False,
     ).update(is_read=True)
 
-    return redirect(
-        request.POST.get(
-            "next",
-            "/notifications/",
-        )
-    )
+    return redirect(_safe_next_url(request))

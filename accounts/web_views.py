@@ -235,6 +235,11 @@ def user_update(
         pk=pk,
     )
 
+    # A regular Administrator must not be able
+    # to modify a Django superuser.
+    if user.is_superuser and not request.user.is_superuser:
+        raise PermissionDenied
+
     if request.method == "POST":
         form = UserUpdateForm(
             request.POST,
@@ -242,9 +247,35 @@ def user_update(
         )
 
         if form.is_valid():
-            form.save()
+            # Prevent an administrator from locking
+            # themselves out of the application.
+            if user == request.user:
+                if not form.cleaned_data["is_active"]:
+                    form.add_error(
+                        "is_active",
+                        "You cannot deactivate your own account.",
+                    )
 
-            return redirect("accounts_web:user-list")
+                selected_role = form.cleaned_data["role"]
+
+                if (
+                    not request.user.is_superuser
+                    and selected_role.name != "Administrator"
+                ):
+                    form.add_error(
+                        "role",
+                        "You cannot remove your own Administrator role.",
+                    )
+
+            if not form.errors:
+                form.save()
+
+                messages.success(
+                    request,
+                    "User updated successfully.",
+                )
+
+                return redirect("accounts_web:user-list")
 
     else:
         form = UserUpdateForm(instance=user)

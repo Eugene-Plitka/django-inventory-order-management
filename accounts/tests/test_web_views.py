@@ -121,6 +121,11 @@ class UserManagementWebTests(TestCase):
 
         cls.sales_manager.groups.add(Group.objects.get(name="Sales Manager"))
 
+        cls.superuser = User.objects.create_superuser(
+            email="superuser@example.com",
+            password="StrongPass123!",
+        )
+
     def test_administrator_can_open_user_list(self):
         self.client.force_login(self.administrator)
 
@@ -200,7 +205,7 @@ class UserManagementWebTests(TestCase):
                 args=[self.sales_manager.pk],
             ),
             {
-                "email": (self.sales_manager.email),
+                "email": self.sales_manager.email,
                 "first_name": "Updated",
                 "last_name": "User",
                 "role": warehouse_group.pk,
@@ -225,6 +230,105 @@ class UserManagementWebTests(TestCase):
             ["Warehouse Employee"],
         )
 
+    def test_administrator_cannot_deactivate_own_account(self):
+        self.client.force_login(self.administrator)
+
+        administrator_group = Group.objects.get(name="Administrator")
+
+        response = self.client.post(
+            reverse(
+                "accounts_web:user-update",
+                args=[self.administrator.pk],
+            ),
+            {
+                "email": self.administrator.email,
+                "first_name": self.administrator.first_name,
+                "last_name": self.administrator.last_name,
+                "role": administrator_group.pk,
+            },
+        )
+
+        self.assertEqual(
+            response.status_code,
+            200,
+        )
+
+        self.assertContains(
+            response,
+            "You cannot deactivate your own account.",
+        )
+
+        self.administrator.refresh_from_db()
+
+        self.assertTrue(self.administrator.is_active)
+
+    def test_administrator_cannot_remove_own_administrator_role(self):
+        self.client.force_login(self.administrator)
+
+        sales_group = Group.objects.get(name="Sales Manager")
+
+        response = self.client.post(
+            reverse(
+                "accounts_web:user-update",
+                args=[self.administrator.pk],
+            ),
+            {
+                "email": self.administrator.email,
+                "first_name": self.administrator.first_name,
+                "last_name": self.administrator.last_name,
+                "role": sales_group.pk,
+                "is_active": "on",
+            },
+        )
+
+        self.assertEqual(
+            response.status_code,
+            200,
+        )
+
+        self.assertContains(
+            response,
+            "You cannot remove your own Administrator role.",
+        )
+
+        self.administrator.refresh_from_db()
+
+        self.assertTrue(self.administrator.groups.filter(name="Administrator").exists())
+
+        self.assertFalse(
+            self.administrator.groups.filter(name="Sales Manager").exists()
+        )
+
+    def test_administrator_cannot_edit_superuser(self):
+        self.client.force_login(self.administrator)
+
+        response = self.client.get(
+            reverse(
+                "accounts_web:user-update",
+                args=[self.superuser.pk],
+            )
+        )
+
+        self.assertEqual(
+            response.status_code,
+            403,
+        )
+
+    def test_superuser_can_edit_superuser(self):
+        self.client.force_login(self.superuser)
+
+        response = self.client.get(
+            reverse(
+                "accounts_web:user-update",
+                args=[self.superuser.pk],
+            )
+        )
+
+        self.assertEqual(
+            response.status_code,
+            200,
+        )
+
     def test_inactive_user_cannot_login(self):
         self.sales_manager.is_active = False
 
@@ -233,7 +337,7 @@ class UserManagementWebTests(TestCase):
         response = self.client.post(
             reverse("accounts_web:login"),
             {
-                "username": (self.sales_manager.email),
+                "username": self.sales_manager.email,
                 "password": "StrongPass123!",
             },
         )

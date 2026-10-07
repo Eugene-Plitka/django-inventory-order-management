@@ -19,6 +19,7 @@ from django.shortcuts import (
     redirect,
     render,
 )
+from django.views.decorators.http import require_POST
 
 from inventory.models import StockReservation
 
@@ -439,18 +440,13 @@ def sales_order_update(
 
 
 @login_required
+@require_POST
 def sales_order_confirm(
     request,
     pk,
 ):
     if not _can_manage_sales_order(request.user):
         raise PermissionDenied
-
-    if request.method != "POST":
-        return redirect(
-            "sales_web:sales-order-detail",
-            pk=pk,
-        )
 
     try:
         confirm_sales_order(order_id=pk)
@@ -474,18 +470,13 @@ def sales_order_confirm(
 
 
 @login_required
+@require_POST
 def sales_order_cancel(
     request,
     pk,
 ):
     if not _can_manage_sales_order(request.user):
         raise PermissionDenied
-
-    if request.method != "POST":
-        return redirect(
-            "sales_web:sales-order-detail",
-            pk=pk,
-        )
 
     try:
         cancel_sales_order(order_id=pk)
@@ -509,18 +500,13 @@ def sales_order_cancel(
 
 
 @login_required
+@require_POST
 def sales_order_start_processing(
     request,
     pk,
 ):
     if not _can_process_sales_order(request.user):
         raise PermissionDenied
-
-    if request.method != "POST":
-        return redirect(
-            "sales_web:sales-order-detail",
-            pk=pk,
-        )
 
     try:
         start_processing_sales_order(order_id=pk)
@@ -544,18 +530,13 @@ def sales_order_start_processing(
 
 
 @login_required
+@require_POST
 def sales_order_ship(
     request,
     pk,
 ):
     if not _can_process_sales_order(request.user):
         raise PermissionDenied
-
-    if request.method != "POST":
-        return redirect(
-            "sales_web:sales-order-detail",
-            pk=pk,
-        )
 
     try:
         ship_sales_order(

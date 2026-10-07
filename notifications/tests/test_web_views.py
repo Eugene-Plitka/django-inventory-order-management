@@ -19,7 +19,7 @@ class NotificationWebTests(TestCase):
 
         self.notification = Notification.objects.create(
             recipient=self.user,
-            notification_type=(Notification.Type.LOW_STOCK),
+            notification_type=Notification.Type.LOW_STOCK,
             title="Low stock warning",
             message="Brake Pads are low in stock.",
             url="/stock/",
@@ -27,7 +27,7 @@ class NotificationWebTests(TestCase):
 
         self.other_notification = Notification.objects.create(
             recipient=self.other_user,
-            notification_type=(Notification.Type.LOW_STOCK),
+            notification_type=Notification.Type.LOW_STOCK,
             title="Other notification",
             message="Should not be visible.",
         )
@@ -63,7 +63,7 @@ class NotificationWebTests(TestCase):
     def test_unread_filter(self):
         Notification.objects.create(
             recipient=self.user,
-            notification_type=(Notification.Type.SALES_ORDER_SHIPPED),
+            notification_type=Notification.Type.SALES_ORDER_SHIPPED,
             title="Already read",
             message="Read notification.",
             is_read=True,
@@ -99,7 +99,7 @@ class NotificationWebTests(TestCase):
     def test_read_filter(self):
         Notification.objects.create(
             recipient=self.user,
-            notification_type=(Notification.Type.SALES_ORDER_SHIPPED),
+            notification_type=Notification.Type.SALES_ORDER_SHIPPED,
             title="Already read",
             message="Read notification.",
             is_read=True,
@@ -151,6 +151,52 @@ class NotificationWebTests(TestCase):
 
         self.assertTrue(self.notification.is_read)
 
+    def test_mark_notification_read_redirects_to_safe_internal_next(self):
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse(
+                "notifications:read",
+                args=[self.notification.pk],
+            ),
+            {
+                "next": "/notifications/?status=unread",
+            },
+        )
+
+        self.assertEqual(
+            response.status_code,
+            302,
+        )
+
+        self.assertEqual(
+            response.url,
+            "/notifications/?status=unread",
+        )
+
+    def test_mark_notification_read_rejects_external_next(self):
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse(
+                "notifications:read",
+                args=[self.notification.pk],
+            ),
+            {
+                "next": "https://evil.example/phishing",
+            },
+        )
+
+        self.assertEqual(
+            response.status_code,
+            302,
+        )
+
+        self.assertEqual(
+            response.url,
+            "/notifications/",
+        )
+
     def test_open_marks_notification_read(self):
         self.client.force_login(self.user)
 
@@ -193,7 +239,7 @@ class NotificationWebTests(TestCase):
     def test_mark_all_as_read_affects_only_current_user(self):
         Notification.objects.create(
             recipient=self.user,
-            notification_type=(Notification.Type.PURCHASE_ORDER_CONFIRMED),
+            notification_type=Notification.Type.PURCHASE_ORDER_CONFIRMED,
             title="Second notification",
             message="Another notification.",
         )
@@ -217,3 +263,64 @@ class NotificationWebTests(TestCase):
         self.other_notification.refresh_from_db()
 
         self.assertFalse(self.other_notification.is_read)
+
+    def test_mark_all_rejects_external_next(self):
+        Notification.objects.create(
+            recipient=self.user,
+            notification_type=Notification.Type.PURCHASE_ORDER_CONFIRMED,
+            title="Second notification",
+            message="Another notification.",
+        )
+
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("notifications:read-all"),
+            {
+                "next": "https://evil.example/phishing",
+            },
+        )
+
+        self.assertEqual(
+            response.status_code,
+            302,
+        )
+
+        self.assertEqual(
+            response.url,
+            "/notifications/",
+        )
+
+    def test_notification_actions_require_post(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse(
+                "notifications:read",
+                args=[self.notification.pk],
+            )
+        )
+
+        self.assertEqual(
+            response.status_code,
+            405,
+        )
+
+        response = self.client.get(
+            reverse(
+                "notifications:open",
+                args=[self.notification.pk],
+            )
+        )
+
+        self.assertEqual(
+            response.status_code,
+            405,
+        )
+
+        response = self.client.get(reverse("notifications:read-all"))
+
+        self.assertEqual(
+            response.status_code,
+            405,
+        )

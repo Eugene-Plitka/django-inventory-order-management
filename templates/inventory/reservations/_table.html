@@ -168,9 +168,12 @@
                 <tr>
 
                     <td>
-                        <span class="product-sku">
+                        <a
+                            href="{% url 'sales_web:sales-order-detail' reservation.sales_order_item.sales_order.id %}"
+                            class="order-number-link"
+                        >
                             {{ reservation.sales_order_item.sales_order.order_number }}
-                        </span>
+                        </a>
                     </td>
 
                     <td>

@@ -126,7 +126,7 @@
 
                         {% if user.is_superuser %}
 
-                            <span class="status-badge status-confirmed">
+                            <span class="status-badge role-administrator">
                                 Administrator
                             </span>
 
@@ -136,9 +136,37 @@
 
                                 {% if role %}
 
-                                    <span class="status-badge status-draft">
-                                        {{ role.name }}
-                                    </span>
+                                    {% if role.name == "Administrator" %}
+
+                                        <span class="status-badge role-administrator">
+                                            {{ role.name }}
+                                        </span>
+
+                                    {% elif role.name == "Purchasing Manager" %}
+
+                                        <span class="status-badge role-purchasing">
+                                            {{ role.name }}
+                                        </span>
+
+                                    {% elif role.name == "Sales Manager" %}
+
+                                        <span class="status-badge role-sales">
+                                            {{ role.name }}
+                                        </span>
+
+                                    {% elif role.name == "Warehouse Employee" %}
+
+                                        <span class="status-badge role-warehouse">
+                                            {{ role.name }}
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="status-badge status-draft">
+                                            {{ role.name }}
+                                        </span>
+
+                                    {% endif %}
 
                                 {% else %}
 

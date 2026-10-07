@@ -19,6 +19,7 @@ from django.shortcuts import (
     redirect,
     render,
 )
+from django.views.decorators.http import require_POST
 
 from core.pagination import get_items_per_page
 
@@ -424,18 +425,13 @@ def purchase_order_update(
 
 
 @login_required
+@require_POST
 def purchase_order_confirm(
     request,
     pk,
 ):
     if not _can_manage_purchase_order(request.user):
         raise PermissionDenied
-
-    if request.method != "POST":
-        return redirect(
-            "purchasing_web:purchase-order-detail",
-            pk=pk,
-        )
 
     try:
         confirm_purchase_order(order_id=pk)
@@ -459,18 +455,13 @@ def purchase_order_confirm(
 
 
 @login_required
+@require_POST
 def purchase_order_cancel(
     request,
     pk,
 ):
     if not _can_manage_purchase_order(request.user):
         raise PermissionDenied
-
-    if request.method != "POST":
-        return redirect(
-            "purchasing_web:purchase-order-detail",
-            pk=pk,
-        )
 
     try:
         cancel_purchase_order(order_id=pk)
@@ -494,18 +485,13 @@ def purchase_order_cancel(
 
 
 @login_required
+@require_POST
 def purchase_order_receive(
     request,
     pk,
 ):
     if not _can_receive_purchase_order(request.user):
         raise PermissionDenied
-
-    if request.method != "POST":
-        return redirect(
-            "purchasing_web:purchase-order-detail",
-            pk=pk,
-        )
 
     try:
         receive_purchase_order(

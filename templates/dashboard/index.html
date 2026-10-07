@@ -26,7 +26,7 @@
     <div class="page-header-actions">
 
         <span class="dashboard-date">
-            Inventory Overview
+            Operational Overview
         </span>
 
     </div>
@@ -38,7 +38,10 @@
 
     {% if can_view_products %}
 
-        <div class="stat-card">
+        <a
+            href="{% url 'catalog_web:product-list' %}?status=active"
+            class="stat-card stat-card-link"
+        >
 
             <div class="stat-card-content">
 
@@ -65,14 +68,17 @@
 
             </div>
 
-        </div>
+        </a>
 
     {% endif %}
 
 
     {% if can_view_stock %}
 
-        <div class="stat-card">
+        <a
+            href="{% url 'inventory_web:stock-list' %}?low_stock=true"
+            class="stat-card stat-card-link"
+        >
 
             <div class="stat-card-content">
 
@@ -99,14 +105,17 @@
 
             </div>
 
-        </div>
+        </a>
 
     {% endif %}
 
 
     {% if can_view_sales %}
 
-        <div class="stat-card">
+        <a
+            href="{% url 'sales_web:sales-order-list' %}"
+            class="stat-card stat-card-link"
+        >
 
             <div class="stat-card-content">
 
@@ -134,14 +143,17 @@
 
             </div>
 
-        </div>
+        </a>
 
     {% endif %}
 
 
     {% if can_view_purchases %}
 
-        <div class="stat-card">
+        <a
+            href="{% url 'purchasing_web:purchase-order-list' %}"
+            class="stat-card stat-card-link"
+        >
 
             <div class="stat-card-content">
 
@@ -169,7 +181,7 @@
 
             </div>
 
-        </div>
+        </a>
 
     {% endif %}
 
@@ -433,7 +445,7 @@
                         </h2>
 
                         <p class="panel-subtitle">
-                            Items below reorder level
+                            Items at or below reorder level
                         </p>
 
                     </div>
@@ -453,7 +465,10 @@
 
                     {% for stock in low_stock_items %}
 
-                        <div class="low-stock-item">
+                        <a
+                            href="{% url 'inventory_web:stock-list' %}?search={{ stock.product.sku|urlencode }}&low_stock=true"
+                            class="low-stock-item low-stock-item-link"
+                        >
 
                             <div class="low-stock-product">
 
@@ -501,7 +516,7 @@
 
                             </div>
 
-                        </div>
+                        </a>
 
                     {% empty %}
 
@@ -517,7 +532,7 @@
 
                             <span>
                                 No products are currently
-                                below their reorder level.
+                                at or below their reorder level.
                             </span>
 
                         </div>
