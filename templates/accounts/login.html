@@ -14,7 +14,7 @@
     >
 
     <title>
-        Sign In · Inventory Management
+        Sign In · {{ system_settings.company_name }}
     </title>
 
     <link
@@ -34,17 +34,34 @@
             <div class="auth-brand">
 
                 <div class="auth-logo">
-                    IM
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5z"></path>
+                        <path d="M12 12 4 7.5"></path>
+                        <path d="M12 12l8-4.5"></path>
+                        <path d="M12 12v9"></path>
+                    </svg>
+
                 </div>
 
-                <div>
-                    <strong>
-                        Inventory Management
+
+                <div class="auth-brand-copy">
+
+                    <strong
+                        title="{{ system_settings.company_name }}"
+                    >
+                        {{ system_settings.company_name }}
                     </strong>
 
-                    <span>
-                        Operations Platform
+                    <span
+                        title="{{ system_settings.company_description }}"
+                    >
+                        {{ system_settings.company_description }}
                     </span>
+
                 </div>
 
             </div>
@@ -111,11 +128,13 @@
 
 
                     {% if next %}
+
                         <input
                             type="hidden"
                             name="next"
                             value="{{ next }}"
                         >
+
                     {% endif %}
 
 
@@ -128,9 +147,11 @@
                         {{ form.username }}
 
                         {% for error in form.username.errors %}
+
                             <div class="field-error">
                                 {{ error }}
                             </div>
+
                         {% endfor %}
 
                     </div>
@@ -145,9 +166,11 @@
                         {{ form.password }}
 
                         {% for error in form.password.errors %}
+
                             <div class="field-error">
                                 {{ error }}
                             </div>
+
                         {% endfor %}
 
                     </div>
@@ -164,7 +187,7 @@
 
 
                 <div class="auth-form-footer">
-                    Inventory & Order Management System
+                    {{ system_settings.company_name }}
                 </div>
 
             </div>
