@@ -4,6 +4,7 @@ from django.db import transaction
 from django.db.models import Sum
 from django.utils import timezone
 
+from core.services import get_system_settings
 from inventory.models import (
     Stock,
     StockMovement,
@@ -40,7 +41,11 @@ def create_sales_order(
         order_number=temporary_number,
     )
 
-    order.order_number = f"SO-{timezone.now().year}-{order.id:06d}"
+    settings = get_system_settings()
+
+    order.order_number = (
+        f"{settings.sales_order_prefix}-{timezone.now().year}-{order.id:06d}"
+    )
 
     order.save(
         update_fields=(

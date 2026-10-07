@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load ui %}
 
 {% block title %}
     {{ order.order_number }}
@@ -9,6 +10,7 @@
 <div class="page-header">
 
     <div>
+
         <div class="order-title-row">
 
             <h1 class="page-title">
@@ -26,6 +28,7 @@
         <p class="page-subtitle">
             Sales order details and fulfillment status.
         </p>
+
     </div>
 
 
@@ -39,12 +42,14 @@
         </a>
 
         {% if can_edit %}
+
             <a
                 href="{% url 'sales_web:sales-order-update' order.id %}"
                 class="button button-secondary"
             >
                 Edit
             </a>
+
         {% endif %}
 
     </div>
@@ -83,40 +88,56 @@
             <div class="order-info-grid">
 
                 <div class="order-info-item">
-                    <span>Customer</span>
+
+                    <span>
+                        Customer
+                    </span>
 
                     <strong>
                         {{ order.customer.name }}
                     </strong>
+
                 </div>
 
 
                 <div class="order-info-item">
-                    <span>Warehouse</span>
+
+                    <span>
+                        Warehouse
+                    </span>
 
                     <strong>
                         {{ order.warehouse.code }}
                         —
                         {{ order.warehouse.name }}
                     </strong>
+
                 </div>
 
 
                 <div class="order-info-item">
-                    <span>Created by</span>
+
+                    <span>
+                        Created by
+                    </span>
 
                     <strong>
                         {{ order.created_by.email }}
                     </strong>
+
                 </div>
 
 
                 <div class="order-info-item">
-                    <span>Created</span>
+
+                    <span>
+                        Created
+                    </span>
 
                     <strong>
-                        {{ order.created_at|date:"M d, Y H:i" }}
+                        {{ order.created_at|date:"Y-m-d H:i" }}
                     </strong>
+
                 </div>
 
             </div>
@@ -127,7 +148,9 @@
         <div class="card order-section">
 
             <div class="panel-header">
+
                 <div>
+
                     <h2 class="panel-title">
                         Order Items
                     </h2>
@@ -135,7 +158,9 @@
                     <p class="panel-subtitle">
                         Products included in this sales order.
                     </p>
+
                 </div>
+
             </div>
 
 
@@ -153,6 +178,7 @@
                         </tr>
                     </thead>
 
+
                     <tbody>
 
                         {% for item in items %}
@@ -165,23 +191,27 @@
                                     </span>
                                 </td>
 
+
                                 <td>
                                     <strong class="product-table-name">
                                         {{ item.product.name }}
                                     </strong>
                                 </td>
 
+
                                 <td>
                                     {{ item.quantity }}
                                 </td>
 
+
                                 <td>
-                                    ${{ item.unit_price|floatformat:2 }}
+                                    {{ item.unit_price|amount }}
                                 </td>
+
 
                                 <td>
                                     <strong>
-                                        ${{ item.line_total|floatformat:2 }}
+                                        {{ item.line_total|amount }}
                                     </strong>
                                 </td>
 
@@ -190,12 +220,14 @@
                         {% empty %}
 
                             <tr>
+
                                 <td
                                     colspan="5"
                                     class="table-empty"
                                 >
                                     No items.
                                 </td>
+
                             </tr>
 
                         {% endfor %}
@@ -208,13 +240,15 @@
 
 
             <div class="order-total">
+
                 <span>
                     Order Total
                 </span>
 
                 <strong>
-                    ${{ order_total|floatformat:2 }}
+                    {{ order_total|amount }}
                 </strong>
+
             </div>
 
         </div>
@@ -225,7 +259,9 @@
             <div class="card order-section">
 
                 <div class="panel-header">
+
                     <div>
+
                         <h2 class="panel-title">
                             Stock Reservations
                         </h2>
@@ -233,7 +269,9 @@
                         <p class="panel-subtitle">
                             Inventory allocated to this order.
                         </p>
+
                     </div>
+
                 </div>
 
 
@@ -250,6 +288,7 @@
                             </tr>
                         </thead>
 
+
                         <tbody>
 
                             {% for reservation in reservations %}
@@ -260,31 +299,34 @@
                                         {{ reservation.stock.product.name }}
                                     </td>
 
+
                                     <td>
                                         {{ reservation.stock.warehouse.code }}
                                     </td>
+
 
                                     <td>
                                         {{ reservation.quantity }}
                                     </td>
 
+
                                     <td>
 
                                         {% if reservation.status == "ACTIVE" %}
 
-                                            <span class="status-badge status-confirmed">
+                                            <span class="status-badge status-active">
                                                 Active
                                             </span>
 
                                         {% elif reservation.status == "RELEASED" %}
 
-                                            <span class="status-badge status-inactive">
+                                            <span class="status-badge status-released">
                                                 Released
                                             </span>
 
                                         {% else %}
 
-                                            <span class="status-badge status-shipped">
+                                            <span class="status-badge status-consumed">
                                                 Consumed
                                             </span>
 
@@ -314,6 +356,7 @@
         <div class="card order-actions-card">
 
             <div class="order-actions-header">
+
                 <h2>
                     Order Actions
                 </h2>
@@ -322,6 +365,7 @@
                     Available actions depend on current status
                     and your role.
                 </p>
+
             </div>
 
 
@@ -341,6 +385,7 @@
                         >
                             Confirm Order
                         </button>
+
                     </form>
 
                 {% endif %}
@@ -360,6 +405,7 @@
                         >
                             Start Processing
                         </button>
+
                     </form>
 
                 {% endif %}
@@ -379,6 +425,7 @@
                         >
                             Ship Order
                         </button>
+
                     </form>
 
                 {% endif %}
@@ -398,6 +445,7 @@
                         >
                             Cancel Order
                         </button>
+
                     </form>
 
                 {% endif %}
@@ -426,34 +474,42 @@
             <div class="timeline">
 
                 <div class="timeline-item">
+
                     <span class="timeline-dot"></span>
 
                     <div>
+
                         <strong>
                             Created
                         </strong>
 
                         <span>
-                            {{ order.created_at|date:"M d, Y H:i" }}
+                            {{ order.created_at|date:"Y-m-d H:i" }}
                         </span>
+
                     </div>
+
                 </div>
 
 
                 {% if order.confirmed_at %}
 
                     <div class="timeline-item">
+
                         <span class="timeline-dot"></span>
 
                         <div>
+
                             <strong>
                                 Confirmed
                             </strong>
 
                             <span>
-                                {{ order.confirmed_at|date:"M d, Y H:i" }}
+                                {{ order.confirmed_at|date:"Y-m-d H:i" }}
                             </span>
+
                         </div>
+
                     </div>
 
                 {% endif %}
@@ -462,17 +518,21 @@
                 {% if order.shipped_at %}
 
                     <div class="timeline-item">
+
                         <span class="timeline-dot"></span>
 
                         <div>
+
                             <strong>
                                 Shipped
                             </strong>
 
                             <span>
-                                {{ order.shipped_at|date:"M d, Y H:i" }}
+                                {{ order.shipped_at|date:"Y-m-d H:i" }}
                             </span>
+
                         </div>
+
                     </div>
 
                 {% endif %}
@@ -481,17 +541,21 @@
                 {% if order.cancelled_at %}
 
                     <div class="timeline-item">
+
                         <span class="timeline-dot timeline-dot-danger"></span>
 
                         <div>
+
                             <strong>
                                 Cancelled
                             </strong>
 
                             <span>
-                                {{ order.cancelled_at|date:"M d, Y H:i" }}
+                                {{ order.cancelled_at|date:"Y-m-d H:i" }}
                             </span>
+
                         </div>
+
                     </div>
 
                 {% endif %}

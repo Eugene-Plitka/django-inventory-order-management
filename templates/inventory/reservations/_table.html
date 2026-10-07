@@ -4,16 +4,162 @@
 
         <thead>
             <tr>
-                <th>Sales Order</th>
-                <th>SKU</th>
-                <th>Product</th>
-                <th>Warehouse</th>
-                <th>Quantity</th>
-                <th>Status</th>
-                <th>Created</th>
-                <th>Released</th>
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status }}&sort=order&direction={% if sort == 'order' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#reservations-table"
+                        hx-push-url="true"
+                    >
+                        Sales Order
+
+                        {% if sort == "order" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status }}&sort=sku&direction={% if sort == 'sku' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#reservations-table"
+                        hx-push-url="true"
+                    >
+                        SKU
+
+                        {% if sort == "sku" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status }}&sort=product&direction={% if sort == 'product' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#reservations-table"
+                        hx-push-url="true"
+                    >
+                        Product
+
+                        {% if sort == "product" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status }}&sort=warehouse&direction={% if sort == 'warehouse' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#reservations-table"
+                        hx-push-url="true"
+                    >
+                        Warehouse
+
+                        {% if sort == "warehouse" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status }}&sort=quantity&direction={% if sort == 'quantity' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#reservations-table"
+                        hx-push-url="true"
+                    >
+                        Quantity
+
+                        {% if sort == "quantity" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status }}&sort=status&direction={% if sort == 'status' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#reservations-table"
+                        hx-push-url="true"
+                    >
+                        Status
+
+                        {% if sort == "status" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status }}&sort=created&direction={% if sort == 'created' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#reservations-table"
+                        hx-push-url="true"
+                    >
+                        Created
+
+                        {% if sort == "created" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status }}&sort=released&direction={% if sort == 'released' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#reservations-table"
+                        hx-push-url="true"
+                    >
+                        Released
+
+                        {% if sort == "released" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
             </tr>
         </thead>
+
 
         <tbody>
 
@@ -48,33 +194,45 @@
                     </td>
 
                     <td>
+
                         {% if reservation.status == "ACTIVE" %}
-                            <span class="status-badge status-confirmed">
+
+                            <span class="status-badge status-active">
                                 Active
                             </span>
 
                         {% elif reservation.status == "RELEASED" %}
-                            <span class="status-badge status-inactive">
+
+                            <span class="status-badge status-released">
                                 Released
                             </span>
 
                         {% else %}
-                            <span class="status-badge status-shipped">
+
+                            <span class="status-badge status-consumed">
                                 Consumed
                             </span>
+
                         {% endif %}
+
                     </td>
 
                     <td class="table-muted">
-                        {{ reservation.created_at|date:"M d, Y H:i" }}
+                        {{ reservation.created_at|date:"Y-m-d H:i" }}
                     </td>
 
                     <td class="table-muted">
+
                         {% if reservation.released_at %}
-                            {{ reservation.released_at|date:"M d, Y H:i" }}
+
+                            {{ reservation.released_at|date:"Y-m-d H:i" }}
+
                         {% else %}
+
                             —
+
                         {% endif %}
+
                     </td>
 
                 </tr>
@@ -101,47 +259,53 @@
 
 {% if page_obj.paginator.num_pages > 1 %}
 
-<div class="pagination-bar">
+    <div class="pagination-bar">
 
-    <div class="pagination-summary">
-        Showing
-        {{ page_obj.start_index }}
-        –
-        {{ page_obj.end_index }}
-        of
-        {{ page_obj.paginator.count }}
+        <div class="pagination-summary">
+
+            Showing
+            {{ page_obj.start_index }}
+            –
+            {{ page_obj.end_index }}
+            of
+            {{ page_obj.paginator.count }}
+
+        </div>
+
+        <div class="pagination">
+
+            {% if page_obj.has_previous %}
+
+                <a
+                    hx-get="?page={{ page_obj.previous_page_number }}&search={{ search|urlencode }}&status={{ selected_status }}&sort={{ sort }}&direction={{ direction }}"
+                    hx-target="#reservations-table"
+                    hx-push-url="true"
+                    class="pagination-button"
+                >
+                    ‹
+                </a>
+
+            {% endif %}
+
+            <span class="pagination-button pagination-active">
+                {{ page_obj.number }}
+            </span>
+
+            {% if page_obj.has_next %}
+
+                <a
+                    hx-get="?page={{ page_obj.next_page_number }}&search={{ search|urlencode }}&status={{ selected_status }}&sort={{ sort }}&direction={{ direction }}"
+                    hx-target="#reservations-table"
+                    hx-push-url="true"
+                    class="pagination-button"
+                >
+                    ›
+                </a>
+
+            {% endif %}
+
+        </div>
+
     </div>
-
-    <div class="pagination">
-
-        {% if page_obj.has_previous %}
-            <a
-                hx-get="?page={{ page_obj.previous_page_number }}&search={{ search }}&status={{ selected_status }}"
-                hx-target="#reservations-table"
-                hx-push-url="true"
-                class="pagination-button"
-            >
-                ‹
-            </a>
-        {% endif %}
-
-        <span class="pagination-button pagination-active">
-            {{ page_obj.number }}
-        </span>
-
-        {% if page_obj.has_next %}
-            <a
-                hx-get="?page={{ page_obj.next_page_number }}&search={{ search }}&status={{ selected_status }}"
-                hx-target="#reservations-table"
-                hx-push-url="true"
-                class="pagination-button"
-            >
-                ›
-            </a>
-        {% endif %}
-
-    </div>
-
-</div>
 
 {% endif %}

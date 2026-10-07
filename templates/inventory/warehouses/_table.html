@@ -3,15 +3,114 @@
     <table class="data-table">
 
         <thead>
+
             <tr>
-                <th>Code</th>
-                <th>Warehouse</th>
-                <th>Address</th>
-                <th>Status</th>
-                <th>Updated</th>
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status }}&sort=code&direction={% if sort == 'code' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#warehouses-table"
+                        hx-push-url="true"
+                    >
+                        Code
+
+                        {% if sort == "code" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status }}&sort=name&direction={% if sort == 'name' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#warehouses-table"
+                        hx-push-url="true"
+                    >
+                        Warehouse
+
+                        {% if sort == "name" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status }}&sort=address&direction={% if sort == 'address' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#warehouses-table"
+                        hx-push-url="true"
+                    >
+                        Address
+
+                        {% if sort == "address" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status }}&sort=status&direction={% if sort == 'status' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#warehouses-table"
+                        hx-push-url="true"
+                    >
+                        Status
+
+                        {% if sort == "status" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status }}&sort=updated&direction={% if sort == 'updated' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#warehouses-table"
+                        hx-push-url="true"
+                    >
+                        Updated
+
+                        {% if sort == "updated" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
                 <th></th>
+
             </tr>
+
         </thead>
+
 
         <tbody>
 
@@ -20,52 +119,79 @@
                 <tr>
 
                     <td>
+
                         <span class="product-sku">
                             {{ warehouse.code }}
                         </span>
+
                     </td>
 
+
                     <td>
+
                         <strong class="product-table-name">
                             {{ warehouse.name }}
                         </strong>
+
                     </td>
 
+
                     <td>
+
                         <span class="table-muted">
+
                             {% if warehouse.address %}
+
                                 {{ warehouse.address|truncatechars:60 }}
+
                             {% else %}
+
                                 —
+
                             {% endif %}
+
                         </span>
+
                     </td>
 
+
                     <td>
+
                         {% if warehouse.is_active %}
+
                             <span class="status-badge status-active">
                                 Active
                             </span>
+
                         {% else %}
+
                             <span class="status-badge status-inactive">
                                 Inactive
                             </span>
+
                         {% endif %}
+
                     </td>
+
 
                     <td class="table-muted">
-                        {{ warehouse.updated_at|date:"M d, Y" }}
+                        {{ warehouse.updated_at|date:"Y-m-d" }}
                     </td>
 
+
                     <td class="table-actions">
+
                         {% if perms.inventory.change_warehouse %}
+
                             <a
                                 href="{% url 'inventory_web:warehouse-update' warehouse.id %}"
                                 class="table-action-link"
                             >
                                 Edit
                             </a>
+
                         {% endif %}
+
                     </td>
 
                 </tr>
@@ -73,12 +199,14 @@
             {% empty %}
 
                 <tr>
+
                     <td
                         colspan="6"
                         class="table-empty"
                     >
                         No warehouses found.
                     </td>
+
                 </tr>
 
             {% endfor %}
@@ -92,47 +220,56 @@
 
 {% if page_obj.paginator.num_pages > 1 %}
 
-<div class="pagination-bar">
+    <div class="pagination-bar">
 
-    <div class="pagination-summary">
-        Showing
-        {{ page_obj.start_index }}
-        –
-        {{ page_obj.end_index }}
-        of
-        {{ page_obj.paginator.count }}
+        <div class="pagination-summary">
+
+            Showing
+            {{ page_obj.start_index }}
+            –
+            {{ page_obj.end_index }}
+            of
+            {{ page_obj.paginator.count }}
+
+        </div>
+
+
+        <div class="pagination">
+
+            {% if page_obj.has_previous %}
+
+                <a
+                    hx-get="?page={{ page_obj.previous_page_number }}&search={{ search|urlencode }}&status={{ selected_status }}&sort={{ sort }}&direction={{ direction }}"
+                    hx-target="#warehouses-table"
+                    hx-push-url="true"
+                    class="pagination-button"
+                >
+                    ‹
+                </a>
+
+            {% endif %}
+
+
+            <span class="pagination-button pagination-active">
+                {{ page_obj.number }}
+            </span>
+
+
+            {% if page_obj.has_next %}
+
+                <a
+                    hx-get="?page={{ page_obj.next_page_number }}&search={{ search|urlencode }}&status={{ selected_status }}&sort={{ sort }}&direction={{ direction }}"
+                    hx-target="#warehouses-table"
+                    hx-push-url="true"
+                    class="pagination-button"
+                >
+                    ›
+                </a>
+
+            {% endif %}
+
+        </div>
+
     </div>
-
-    <div class="pagination">
-
-        {% if page_obj.has_previous %}
-            <a
-                hx-get="?page={{ page_obj.previous_page_number }}&search={{ search }}&status={{ selected_status }}"
-                hx-target="#warehouses-table"
-                hx-push-url="true"
-                class="pagination-button"
-            >
-                ‹
-            </a>
-        {% endif %}
-
-        <span class="pagination-button pagination-active">
-            {{ page_obj.number }}
-        </span>
-
-        {% if page_obj.has_next %}
-            <a
-                hx-get="?page={{ page_obj.next_page_number }}&search={{ search }}&status={{ selected_status }}"
-                hx-target="#warehouses-table"
-                hx-push-url="true"
-                class="pagination-button"
-            >
-                ›
-            </a>
-        {% endif %}
-
-    </div>
-
-</div>
 
 {% endif %}

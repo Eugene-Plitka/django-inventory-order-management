@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load ui %}
 
 {% block title %}
     {{ order.order_number }}
@@ -24,7 +25,6 @@
 
         </div>
 
-
         <p class="page-subtitle">
             Purchase order details and receiving status.
         </p>
@@ -41,17 +41,14 @@
             Back
         </a>
 
-
         {% if can_edit %}
 
-            {% if can_edit %}
-                <a
-                    href="{% url 'purchasing_web:purchase-order-update' order.id %}"
-                    class="button button-secondary"
-                >
-                    Edit
-                </a>
-            {% endif %}
+            <a
+                href="{% url 'purchasing_web:purchase-order-update' order.id %}"
+                class="button button-secondary"
+            >
+                Edit
+            </a>
 
         {% endif %}
 
@@ -85,7 +82,6 @@
 <div class="order-layout">
 
     <div class="order-main">
-
 
         <div class="card order-info-card">
 
@@ -139,7 +135,7 @@
                     </span>
 
                     <strong>
-                        {{ order.created_at|date:"M d, Y H:i" }}
+                        {{ order.created_at|date:"Y-m-d H:i" }}
                     </strong>
 
                 </div>
@@ -190,20 +186,16 @@
                             <tr>
 
                                 <td>
-
                                     <span class="product-sku">
                                         {{ item.product.sku }}
                                     </span>
-
                                 </td>
 
 
                                 <td>
-
                                     <strong class="product-table-name">
                                         {{ item.product.name }}
                                     </strong>
-
                                 </td>
 
 
@@ -213,16 +205,14 @@
 
 
                                 <td>
-                                    ${{ item.unit_price|floatformat:2 }}
+                                    {{ item.unit_price|amount }}
                                 </td>
 
 
                                 <td>
-
                                     <strong>
-                                        ${{ item.line_total|floatformat:2 }}
+                                        {{ item.line_total|amount }}
                                     </strong>
-
                                 </td>
 
                             </tr>
@@ -256,7 +246,7 @@
                 </span>
 
                 <strong>
-                    ${{ order_total|floatformat:2 }}
+                    {{ order_total|amount }}
                 </strong>
 
             </div>
@@ -267,7 +257,6 @@
 
 
     <aside class="order-sidebar">
-
 
         <div class="card order-actions-card">
 
@@ -286,7 +275,6 @@
 
 
             <div class="order-action-list">
-
 
                 {% if can_confirm %}
 
@@ -381,7 +369,7 @@
                         </strong>
 
                         <span>
-                            {{ order.created_at|date:"M d, Y H:i" }}
+                            {{ order.created_at|date:"Y-m-d H:i" }}
                         </span>
 
                     </div>
@@ -402,7 +390,7 @@
                             </strong>
 
                             <span>
-                                {{ order.confirmed_at|date:"M d, Y H:i" }}
+                                {{ order.confirmed_at|date:"Y-m-d H:i" }}
                             </span>
 
                         </div>
@@ -425,7 +413,7 @@
                             </strong>
 
                             <span>
-                                {{ order.received_at|date:"M d, Y H:i" }}
+                                {{ order.received_at|date:"Y-m-d H:i" }}
                             </span>
 
                         </div>
@@ -448,7 +436,7 @@
                             </strong>
 
                             <span>
-                                {{ order.cancelled_at|date:"M d, Y H:i" }}
+                                {{ order.cancelled_at|date:"Y-m-d H:i" }}
                             </span>
 
                         </div>

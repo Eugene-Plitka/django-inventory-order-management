@@ -6,11 +6,11 @@
 
         <div>
             <div class="brand-title">
-                Django Inventory
+                {{ system_settings.company_name }}
             </div>
 
             <div class="brand-subtitle">
-                Auto Parts Wholesale
+                {{ system_settings.company_description }}
             </div>
         </div>
     </div>
@@ -216,9 +216,26 @@
 
         {% endif %}
 
-        <a href="#" class="sidebar-link">
-            <span class="sidebar-icon">⚙</span>
-            <span>Settings</span>
-        </a>
+        {% if current_user_role == "Administrator" %}
+
+            <a
+                href="{% url 'core_web:settings' %}"
+                class="
+                    sidebar-link
+                    {% if request.path == '/settings/' %}
+                        sidebar-link-active
+                    {% endif %}
+                "
+            >
+                <span class="sidebar-icon">
+                    ⚙
+                </span>
+
+                <span>
+                    Settings
+                </span>
+            </a>
+
+        {% endif %}
     </nav>
 </aside>

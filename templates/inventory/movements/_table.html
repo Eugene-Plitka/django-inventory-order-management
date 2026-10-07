@@ -4,16 +4,147 @@
 
         <thead>
             <tr>
-                <th>Date</th>
-                <th>SKU</th>
-                <th>Product</th>
-                <th>Warehouse</th>
-                <th>Type</th>
-                <th>Quantity</th>
-                <th>Performed By</th>
-                <th>Reason</th>
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&movement_type={{ selected_movement_type }}&sort=date&direction={% if sort == 'date' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#movements-table"
+                        hx-push-url="true"
+                    >
+                        Date
+
+                        {% if sort == "date" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&movement_type={{ selected_movement_type }}&sort=sku&direction={% if sort == 'sku' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#movements-table"
+                        hx-push-url="true"
+                    >
+                        SKU
+
+                        {% if sort == "sku" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&movement_type={{ selected_movement_type }}&sort=product&direction={% if sort == 'product' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#movements-table"
+                        hx-push-url="true"
+                    >
+                        Product
+
+                        {% if sort == "product" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&movement_type={{ selected_movement_type }}&sort=warehouse&direction={% if sort == 'warehouse' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#movements-table"
+                        hx-push-url="true"
+                    >
+                        Warehouse
+
+                        {% if sort == "warehouse" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&movement_type={{ selected_movement_type }}&sort=type&direction={% if sort == 'type' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#movements-table"
+                        hx-push-url="true"
+                    >
+                        Type
+
+                        {% if sort == "type" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&movement_type={{ selected_movement_type }}&sort=quantity&direction={% if sort == 'quantity' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#movements-table"
+                        hx-push-url="true"
+                    >
+                        Quantity
+
+                        {% if sort == "quantity" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&movement_type={{ selected_movement_type }}&sort=performed_by&direction={% if sort == 'performed_by' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#movements-table"
+                        hx-push-url="true"
+                    >
+                        Performed By
+
+                        {% if sort == "performed_by" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+                <th>
+                    Reason
+                </th>
+
             </tr>
         </thead>
+
 
         <tbody>
 
@@ -22,7 +153,7 @@
                 <tr>
 
                     <td class="table-muted">
-                        {{ movement.created_at|date:"M d, Y H:i" }}
+                        {{ movement.created_at|date:"Y-m-d H:i" }}
                     </td>
 
                     <td>
@@ -48,28 +179,52 @@
                     </td>
 
                     <td>
+
                         {% if movement.quantity > 0 %}
+
                             <strong class="movement-positive">
                                 +{{ movement.quantity }}
                             </strong>
+
                         {% else %}
+
                             <strong class="movement-negative">
                                 {{ movement.quantity }}
                             </strong>
+
                         {% endif %}
+
                     </td>
 
                     <td>
-                        {{ movement.performed_by.email }}
+
+                        {% if movement.performed_by %}
+
+                            {{ movement.performed_by.email }}
+
+                        {% else %}
+
+                            <span class="table-muted">
+                                —
+                            </span>
+
+                        {% endif %}
+
                     </td>
 
                     <td>
                         <span class="table-muted">
+
                             {% if movement.reason %}
+
                                 {{ movement.reason|truncatechars:55 }}
+
                             {% else %}
+
                                 —
+
                             {% endif %}
+
                         </span>
                     </td>
 
@@ -97,47 +252,53 @@
 
 {% if page_obj.paginator.num_pages > 1 %}
 
-<div class="pagination-bar">
+    <div class="pagination-bar">
 
-    <div class="pagination-summary">
-        Showing
-        {{ page_obj.start_index }}
-        –
-        {{ page_obj.end_index }}
-        of
-        {{ page_obj.paginator.count }}
+        <div class="pagination-summary">
+
+            Showing
+            {{ page_obj.start_index }}
+            –
+            {{ page_obj.end_index }}
+            of
+            {{ page_obj.paginator.count }}
+
+        </div>
+
+        <div class="pagination">
+
+            {% if page_obj.has_previous %}
+
+                <a
+                    hx-get="?page={{ page_obj.previous_page_number }}&search={{ search|urlencode }}&movement_type={{ selected_movement_type }}&sort={{ sort }}&direction={{ direction }}"
+                    hx-target="#movements-table"
+                    hx-push-url="true"
+                    class="pagination-button"
+                >
+                    ‹
+                </a>
+
+            {% endif %}
+
+            <span class="pagination-button pagination-active">
+                {{ page_obj.number }}
+            </span>
+
+            {% if page_obj.has_next %}
+
+                <a
+                    hx-get="?page={{ page_obj.next_page_number }}&search={{ search|urlencode }}&movement_type={{ selected_movement_type }}&sort={{ sort }}&direction={{ direction }}"
+                    hx-target="#movements-table"
+                    hx-push-url="true"
+                    class="pagination-button"
+                >
+                    ›
+                </a>
+
+            {% endif %}
+
+        </div>
+
     </div>
-
-    <div class="pagination">
-
-        {% if page_obj.has_previous %}
-            <a
-                hx-get="?page={{ page_obj.previous_page_number }}&search={{ search }}&movement_type={{ selected_movement_type }}"
-                hx-target="#movements-table"
-                hx-push-url="true"
-                class="pagination-button"
-            >
-                ‹
-            </a>
-        {% endif %}
-
-        <span class="pagination-button pagination-active">
-            {{ page_obj.number }}
-        </span>
-
-        {% if page_obj.has_next %}
-            <a
-                hx-get="?page={{ page_obj.next_page_number }}&search={{ search }}&movement_type={{ selected_movement_type }}"
-                hx-target="#movements-table"
-                hx-push-url="true"
-                class="pagination-button"
-            >
-                ›
-            </a>
-        {% endif %}
-
-    </div>
-
-</div>
 
 {% endif %}

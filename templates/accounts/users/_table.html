@@ -4,12 +4,79 @@
 
         <thead>
             <tr>
-                <th>User</th>
-                <th>Name</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Last Login</th>
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status }}&sort=email&direction={% if sort == 'email' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#users-table"
+                        hx-push-url="true"
+                    >
+                        User
+
+                        {% if sort == "email" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+
+                <th>
+                    Name
+                </th>
+
+
+                <th>
+                    Role
+                </th>
+
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status }}&sort=status&direction={% if sort == 'status' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#users-table"
+                        hx-push-url="true"
+                    >
+                        Status
+
+                        {% if sort == "status" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status }}&sort=last_login&direction={% if sort == 'last_login' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#users-table"
+                        hx-push-url="true"
+                    >
+                        Last Login
+
+                        {% if sort == "last_login" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+
                 <th></th>
+
             </tr>
         </thead>
 
@@ -26,18 +93,30 @@
                             {{ user.email }}
                         </strong>
 
+                        {% if user == request.user %}
+
+                            <div class="table-muted">
+                                Current user
+                            </div>
+
+                        {% endif %}
+
                     </td>
 
 
                     <td>
 
                         {% if user.first_name or user.last_name %}
+
                             {{ user.first_name }}
                             {{ user.last_name }}
+
                         {% else %}
+
                             <span class="table-muted">
                                 —
                             </span>
+
                         {% endif %}
 
                     </td>
@@ -56,13 +135,17 @@
                             {% with role=user.groups.first %}
 
                                 {% if role %}
+
                                     <span class="status-badge status-draft">
                                         {{ role.name }}
                                     </span>
+
                                 {% else %}
+
                                     <span class="table-muted">
                                         No role
                                     </span>
+
                                 {% endif %}
 
                             {% endwith %}
@@ -94,9 +177,13 @@
                     <td class="table-muted">
 
                         {% if user.last_login %}
-                            {{ user.last_login|date:"M d, Y H:i" }}
+
+                            {{ user.last_login|date:"Y-m-d H:i" }}
+
                         {% else %}
+
                             Never
+
                         {% endif %}
 
                     </td>
@@ -118,12 +205,14 @@
             {% empty %}
 
                 <tr>
+
                     <td
                         colspan="6"
                         class="table-empty"
                     >
                         No users found.
                     </td>
+
                 </tr>
 
             {% endfor %}
@@ -137,56 +226,56 @@
 
 {% if page_obj.paginator.num_pages > 1 %}
 
-<div class="pagination-bar">
+    <div class="pagination-bar">
 
-    <div class="pagination-summary">
+        <div class="pagination-summary">
 
-        Showing
-        {{ page_obj.start_index }}
-        –
-        {{ page_obj.end_index }}
-        of
-        {{ page_obj.paginator.count }}
+            Showing
+            {{ page_obj.start_index }}
+            –
+            {{ page_obj.end_index }}
+            of
+            {{ page_obj.paginator.count }}
+
+        </div>
+
+
+        <div class="pagination">
+
+            {% if page_obj.has_previous %}
+
+                <a
+                    hx-get="?page={{ page_obj.previous_page_number }}&search={{ search|urlencode }}&status={{ selected_status }}&sort={{ sort }}&direction={{ direction }}"
+                    hx-target="#users-table"
+                    hx-push-url="true"
+                    class="pagination-button"
+                >
+                    ‹
+                </a>
+
+            {% endif %}
+
+
+            <span class="pagination-button pagination-active">
+                {{ page_obj.number }}
+            </span>
+
+
+            {% if page_obj.has_next %}
+
+                <a
+                    hx-get="?page={{ page_obj.next_page_number }}&search={{ search|urlencode }}&status={{ selected_status }}&sort={{ sort }}&direction={{ direction }}"
+                    hx-target="#users-table"
+                    hx-push-url="true"
+                    class="pagination-button"
+                >
+                    ›
+                </a>
+
+            {% endif %}
+
+        </div>
 
     </div>
-
-
-    <div class="pagination">
-
-        {% if page_obj.has_previous %}
-
-            <a
-                hx-get="?page={{ page_obj.previous_page_number }}&search={{ search }}&status={{ selected_status }}"
-                hx-target="#users-table"
-                hx-push-url="true"
-                class="pagination-button"
-            >
-                ‹
-            </a>
-
-        {% endif %}
-
-
-        <span class="pagination-button pagination-active">
-            {{ page_obj.number }}
-        </span>
-
-
-        {% if page_obj.has_next %}
-
-            <a
-                hx-get="?page={{ page_obj.next_page_number }}&search={{ search }}&status={{ selected_status }}"
-                hx-target="#users-table"
-                hx-push-url="true"
-                class="pagination-button"
-            >
-                ›
-            </a>
-
-        {% endif %}
-
-    </div>
-
-</div>
 
 {% endif %}

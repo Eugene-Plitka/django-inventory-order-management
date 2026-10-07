@@ -14,6 +14,8 @@ from django.shortcuts import (
     render,
 )
 
+from core.pagination import get_items_per_page
+
 from .forms import (
     ProfileForm,
     UserCreateForm,
@@ -113,12 +115,23 @@ def user_list(request):
         "",
     ).strip()
 
+    sort = request.GET.get(
+        "sort",
+        "email",
+    ).strip()
+
+    direction = request.GET.get(
+        "direction",
+        "asc",
+    ).strip()
+
     if search:
         users = users.filter(
             Q(email__icontains=search)
             | Q(first_name__icontains=search)
             | Q(last_name__icontains=search)
-        )
+            | Q(groups__name__icontains=search)
+        ).distinct()
 
     if status == "active":
         users = users.filter(is_active=True)
@@ -126,11 +139,33 @@ def user_list(request):
     if status == "inactive":
         users = users.filter(is_active=False)
 
-    users = users.order_by("email")
+    sort_fields = {
+        "email": "email",
+        "first_name": "first_name",
+        "last_name": "last_name",
+        "status": "is_active",
+        "last_login": "last_login",
+    }
+
+    sort_field = sort_fields.get(
+        sort,
+        "email",
+    )
+
+    if direction == "desc":
+        order_by = f"-{sort_field}"
+    else:
+        direction = "asc"
+        order_by = sort_field
+
+    users = users.order_by(
+        order_by,
+        "id",
+    )
 
     paginator = Paginator(
         users,
-        20,
+        get_items_per_page(),
     )
 
     page_obj = paginator.get_page(request.GET.get("page"))
@@ -139,6 +174,8 @@ def user_list(request):
         "page_obj": page_obj,
         "search": search,
         "selected_status": status,
+        "sort": sort,
+        "direction": direction,
     }
 
     template_name = "accounts/users/list.html"

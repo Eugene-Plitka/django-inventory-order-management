@@ -14,17 +14,29 @@
             <div class="notification-page-icon">
 
                 {% if notification.notification_type == "LOW_STOCK" %}
+
                     !
+
                 {% elif notification.notification_type == "SALES_ORDER_CONFIRMED" %}
+
                     SO
+
                 {% elif notification.notification_type == "SALES_ORDER_SHIPPED" %}
+
                     SO
+
                 {% elif notification.notification_type == "PURCHASE_ORDER_CONFIRMED" %}
+
                     PO
+
                 {% elif notification.notification_type == "PURCHASE_ORDER_RECEIVED" %}
+
                     PO
+
                 {% else %}
+
                     N
+
                 {% endif %}
 
             </div>
@@ -38,8 +50,15 @@
                         {{ notification.title }}
                     </strong>
 
+
                     {% if not notification.is_read %}
-                        <span class="notification-unread-dot"></span>
+
+                        <span
+                            class="status-badge status-confirmed"
+                        >
+                            New
+                        </span>
+
                     {% endif %}
 
                 </div>
@@ -53,7 +72,7 @@
                 <div class="notification-page-meta">
 
                     <span>
-                        {{ notification.created_at|date:"M d, Y H:i" }}
+                        {{ notification.created_at|date:"Y-m-d H:i" }}
                     </span>
 
                     <span>
@@ -161,7 +180,7 @@
             {% if page_obj.has_previous %}
 
                 <a
-                    hx-get="?page={{ page_obj.previous_page_number }}&status={{ selected_status }}"
+                    hx-get="?page={{ page_obj.previous_page_number }}&status={{ selected_status }}&sort={{ sort }}"
                     hx-target="#notification-page-list"
                     hx-push-url="true"
                     class="pagination-button"
@@ -180,7 +199,7 @@
             {% if page_obj.has_next %}
 
                 <a
-                    hx-get="?page={{ page_obj.next_page_number }}&status={{ selected_status }}"
+                    hx-get="?page={{ page_obj.next_page_number }}&status={{ selected_status }}&sort={{ sort }}"
                     hx-target="#notification-page-list"
                     hx-push-url="true"
                     class="pagination-button"

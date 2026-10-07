@@ -3,16 +3,153 @@
     <table class="data-table">
 
         <thead>
+
             <tr>
-                <th>Customer</th>
-                <th>Contact</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Tax ID</th>
-                <th>Status</th>
+
+                <th>
+
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status }}&sort=name&direction={% if sort == 'name' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#customers-table"
+                        hx-push-url="true"
+                    >
+                        Customer
+
+                        {% if sort == "name" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+
+                    </a>
+
+                </th>
+
+
+                <th>
+
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status }}&sort=contact&direction={% if sort == 'contact' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#customers-table"
+                        hx-push-url="true"
+                    >
+                        Contact
+
+                        {% if sort == "contact" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+
+                    </a>
+
+                </th>
+
+
+                <th>
+
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status }}&sort=email&direction={% if sort == 'email' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#customers-table"
+                        hx-push-url="true"
+                    >
+                        Email
+
+                        {% if sort == "email" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+
+                    </a>
+
+                </th>
+
+
+                <th>
+
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status }}&sort=phone&direction={% if sort == 'phone' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#customers-table"
+                        hx-push-url="true"
+                    >
+                        Phone
+
+                        {% if sort == "phone" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+
+                    </a>
+
+                </th>
+
+
+                <th>
+
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status }}&sort=tax&direction={% if sort == 'tax' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#customers-table"
+                        hx-push-url="true"
+                    >
+                        Tax ID
+
+                        {% if sort == "tax" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+
+                    </a>
+
+                </th>
+
+
+                <th>
+
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status }}&sort=status&direction={% if sort == 'status' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#customers-table"
+                        hx-push-url="true"
+                    >
+                        Status
+
+                        {% if sort == "status" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+
+                    </a>
+
+                </th>
+
+
                 <th></th>
+
             </tr>
+
         </thead>
+
 
         <tbody>
 
@@ -21,50 +158,70 @@
                 <tr>
 
                     <td>
+
                         <strong class="product-table-name">
                             {{ customer.name }}
                         </strong>
+
                     </td>
+
 
                     <td>
                         {{ customer.contact_person|default:"—" }}
                     </td>
 
+
                     <td>
                         {{ customer.email|default:"—" }}
                     </td>
+
 
                     <td>
                         {{ customer.phone|default:"—" }}
                     </td>
 
+
                     <td>
+
                         <span class="table-muted">
                             {{ customer.tax_id|default:"—" }}
                         </span>
+
                     </td>
 
+
                     <td>
+
                         {% if customer.is_active %}
+
                             <span class="status-badge status-active">
                                 Active
                             </span>
+
                         {% else %}
+
                             <span class="status-badge status-inactive">
                                 Inactive
                             </span>
+
                         {% endif %}
+
                     </td>
 
+
                     <td class="table-actions">
+
                         {% if perms.partners.change_customer %}
+
                             <a
                                 href="{% url 'partners_web:customer-update' customer.id %}"
                                 class="table-action-link"
                             >
                                 Edit
                             </a>
+
                         {% endif %}
+
                     </td>
 
                 </tr>
@@ -72,12 +229,14 @@
             {% empty %}
 
                 <tr>
+
                     <td
                         colspan="7"
                         class="table-empty"
                     >
                         No customers found.
                     </td>
+
                 </tr>
 
             {% endfor %}
@@ -91,47 +250,56 @@
 
 {% if page_obj.paginator.num_pages > 1 %}
 
-<div class="pagination-bar">
+    <div class="pagination-bar">
 
-    <div class="pagination-summary">
-        Showing
-        {{ page_obj.start_index }}
-        –
-        {{ page_obj.end_index }}
-        of
-        {{ page_obj.paginator.count }}
+        <div class="pagination-summary">
+
+            Showing
+            {{ page_obj.start_index }}
+            –
+            {{ page_obj.end_index }}
+            of
+            {{ page_obj.paginator.count }}
+
+        </div>
+
+
+        <div class="pagination">
+
+            {% if page_obj.has_previous %}
+
+                <a
+                    hx-get="?page={{ page_obj.previous_page_number }}&search={{ search|urlencode }}&status={{ selected_status }}&sort={{ sort }}&direction={{ direction }}"
+                    hx-target="#customers-table"
+                    hx-push-url="true"
+                    class="pagination-button"
+                >
+                    ‹
+                </a>
+
+            {% endif %}
+
+
+            <span class="pagination-button pagination-active">
+                {{ page_obj.number }}
+            </span>
+
+
+            {% if page_obj.has_next %}
+
+                <a
+                    hx-get="?page={{ page_obj.next_page_number }}&search={{ search|urlencode }}&status={{ selected_status }}&sort={{ sort }}&direction={{ direction }}"
+                    hx-target="#customers-table"
+                    hx-push-url="true"
+                    class="pagination-button"
+                >
+                    ›
+                </a>
+
+            {% endif %}
+
+        </div>
+
     </div>
-
-    <div class="pagination">
-
-        {% if page_obj.has_previous %}
-            <a
-                hx-get="?page={{ page_obj.previous_page_number }}&search={{ search }}&status={{ selected_status }}"
-                hx-target="#customers-table"
-                hx-push-url="true"
-                class="pagination-button"
-            >
-                ‹
-            </a>
-        {% endif %}
-
-        <span class="pagination-button pagination-active">
-            {{ page_obj.number }}
-        </span>
-
-        {% if page_obj.has_next %}
-            <a
-                hx-get="?page={{ page_obj.next_page_number }}&search={{ search }}&status={{ selected_status }}"
-                hx-target="#customers-table"
-                hx-push-url="true"
-                class="pagination-button"
-            >
-                ›
-            </a>
-        {% endif %}
-
-    </div>
-
-</div>
 
 {% endif %}

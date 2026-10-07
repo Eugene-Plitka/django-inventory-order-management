@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "sales",
     "purchasing",
     "notifications",
+    "core",
 ]
 
 AUTH_USER_MODEL = "accounts.User"
@@ -85,6 +86,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "accounts.context_processors.user_role",
                 "notifications.context_processors.notifications",
+                "core.context_processors.system_settings",
             ],
         },
     },

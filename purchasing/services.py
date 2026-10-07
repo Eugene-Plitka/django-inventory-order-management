@@ -3,6 +3,7 @@ from uuid import uuid4
 from django.db import IntegrityError, transaction
 from django.utils import timezone
 
+from core.services import get_system_settings
 from inventory.models import Stock, StockMovement
 from notifications.services import (
     notify_purchase_order_confirmed,
@@ -38,7 +39,11 @@ def create_purchase_order(
         order_number=temporary_number,
     )
 
-    order.order_number = f"PO-{timezone.now().year}-{order.id:06d}"
+    settings = get_system_settings()
+
+    order.order_number = (
+        f"{settings.purchase_order_prefix}-{timezone.now().year}-{order.id:06d}"
+    )
 
     order.save(
         update_fields=(
@@ -135,17 +140,22 @@ def _get_or_create_locked_stock(*, product, warehouse):
             product=product,
             warehouse=warehouse,
         )
+
     except Stock.DoesNotExist:
+        settings = get_system_settings()
+
         try:
             with transaction.atomic():
                 Stock.objects.create(
                     product=product,
                     warehouse=warehouse,
                     quantity=0,
-                    reorder_level=0,
+                    reorder_level=(settings.default_reorder_level),
                 )
+
         except IntegrityError:
-            # Another transaction created the same stock row first.
+            # Another transaction created
+            # the same stock row first.
             pass
 
         return Stock.objects.select_for_update().get(

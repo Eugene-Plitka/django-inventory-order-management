@@ -59,6 +59,10 @@ urlpatterns = [
         include("notifications.urls"),
     ),
     path(
+        "",
+        include("core.web_urls"),
+    ),
+    path(
         "api/auth/login/",
         TokenObtainPairView.as_view(),
         name="token_obtain_pair",

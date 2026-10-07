@@ -11,6 +11,8 @@ from django.shortcuts import (
     render,
 )
 
+from core.pagination import get_items_per_page
+
 from .forms import (
     StockAdjustmentForm,
     WarehouseForm,
@@ -45,6 +47,16 @@ def warehouse_list(request):
         "",
     ).strip()
 
+    sort = request.GET.get(
+        "sort",
+        "code",
+    ).strip()
+
+    direction = request.GET.get(
+        "direction",
+        "asc",
+    ).strip()
+
     if search:
         warehouses = warehouses.filter(
             Q(name__icontains=search)
@@ -58,11 +70,33 @@ def warehouse_list(request):
     if status == "inactive":
         warehouses = warehouses.filter(is_active=False)
 
-    warehouses = warehouses.order_by("code")
+    sort_fields = {
+        "code": "code",
+        "name": "name",
+        "address": "address",
+        "status": "is_active",
+        "updated": "updated_at",
+    }
+
+    sort_field = sort_fields.get(
+        sort,
+        "code",
+    )
+
+    if direction == "desc":
+        order_by = f"-{sort_field}"
+    else:
+        direction = "asc"
+        order_by = sort_field
+
+    warehouses = warehouses.order_by(
+        order_by,
+        "id",
+    )
 
     paginator = Paginator(
         warehouses,
-        20,
+        get_items_per_page(),
     )
 
     page_obj = paginator.get_page(request.GET.get("page"))
@@ -71,6 +105,8 @@ def warehouse_list(request):
         "page_obj": page_obj,
         "search": search,
         "selected_status": status,
+        "sort": sort,
+        "direction": direction,
     }
 
     template_name = "inventory/warehouses/list.html"
@@ -124,6 +160,16 @@ def stock_list(request):
         "",
     ).strip()
 
+    sort = request.GET.get(
+        "sort",
+        "product",
+    ).strip()
+
+    direction = request.GET.get(
+        "direction",
+        "asc",
+    ).strip()
+
     if search:
         stocks = stocks.filter(
             Q(product__sku__icontains=search) | Q(product__name__icontains=search)
@@ -135,24 +181,48 @@ def stock_list(request):
     if low_stock == "true":
         stocks = stocks.filter(available_quantity__lte=F("reorder_level"))
 
-    stocks = stocks.order_by(
+    sort_fields = {
+        "sku": "product__sku",
+        "product": "product__name",
+        "warehouse": "warehouse__code",
+        "physical": "quantity",
+        "reserved": "reserved_quantity",
+        "available": "available_quantity",
+        "reorder": "reorder_level",
+    }
+
+    sort_field = sort_fields.get(
+        sort,
         "product__name",
+    )
+
+    if direction == "desc":
+        order_by = f"-{sort_field}"
+    else:
+        direction = "asc"
+        order_by = sort_field
+
+    stocks = stocks.order_by(
+        order_by,
         "warehouse__code",
+        "id",
     )
 
     paginator = Paginator(
         stocks,
-        20,
+        get_items_per_page(),
     )
 
     page_obj = paginator.get_page(request.GET.get("page"))
 
     context = {
         "page_obj": page_obj,
-        "warehouses": Warehouse.objects.filter(is_active=True).order_by("code"),
+        "warehouses": (Warehouse.objects.filter(is_active=True).order_by("code")),
         "search": search,
         "selected_warehouse": warehouse_id,
         "selected_low_stock": low_stock,
+        "sort": sort,
+        "direction": direction,
         "is_administrator": (_user_is_administrator(request.user)),
     }
 
@@ -297,7 +367,7 @@ def reservation_list(request):
         "stock__warehouse",
         "sales_order_item",
         "sales_order_item__sales_order",
-    ).order_by("-created_at")
+    )
 
     search = request.GET.get(
         "search",
@@ -307,6 +377,16 @@ def reservation_list(request):
     status = request.GET.get(
         "status",
         "",
+    ).strip()
+
+    sort = request.GET.get(
+        "sort",
+        "created",
+    ).strip()
+
+    direction = request.GET.get(
+        "direction",
+        "desc",
     ).strip()
 
     if search:
@@ -320,9 +400,36 @@ def reservation_list(request):
     if status:
         reservations = reservations.filter(status=status)
 
+    sort_fields = {
+        "order": ("sales_order_item__sales_order__order_number"),
+        "sku": "stock__product__sku",
+        "product": "stock__product__name",
+        "warehouse": "stock__warehouse__code",
+        "quantity": "quantity",
+        "status": "status",
+        "created": "created_at",
+        "released": "released_at",
+    }
+
+    sort_field = sort_fields.get(
+        sort,
+        "created_at",
+    )
+
+    if direction == "asc":
+        order_by = sort_field
+    else:
+        direction = "desc"
+        order_by = f"-{sort_field}"
+
+    reservations = reservations.order_by(
+        order_by,
+        "-id",
+    )
+
     paginator = Paginator(
         reservations,
-        20,
+        get_items_per_page(),
     )
 
     page_obj = paginator.get_page(request.GET.get("page"))
@@ -331,7 +438,9 @@ def reservation_list(request):
         "page_obj": page_obj,
         "search": search,
         "selected_status": status,
-        "statuses": StockReservation.Status.choices,
+        "statuses": (StockReservation.Status.choices),
+        "sort": sort,
+        "direction": direction,
     }
 
     template_name = "inventory/reservations/list.html"
@@ -359,7 +468,7 @@ def movement_list(request):
         "performed_by",
         "sales_order_item",
         "purchase_order_item",
-    ).order_by("-created_at")
+    )
 
     search = request.GET.get(
         "search",
@@ -371,20 +480,57 @@ def movement_list(request):
         "",
     ).strip()
 
+    sort = request.GET.get(
+        "sort",
+        "date",
+    ).strip()
+
+    direction = request.GET.get(
+        "direction",
+        "desc",
+    ).strip()
+
     if search:
         movements = movements.filter(
             Q(stock__product__sku__icontains=search)
             | Q(stock__product__name__icontains=search)
             | Q(stock__warehouse__code__icontains=search)
             | Q(reason__icontains=search)
+            | Q(performed_by__email__icontains=search)
         )
 
     if movement_type:
         movements = movements.filter(movement_type=movement_type)
 
+    sort_fields = {
+        "date": "created_at",
+        "sku": "stock__product__sku",
+        "product": "stock__product__name",
+        "warehouse": "stock__warehouse__code",
+        "type": "movement_type",
+        "quantity": "quantity",
+        "performed_by": "performed_by__email",
+    }
+
+    sort_field = sort_fields.get(
+        sort,
+        "created_at",
+    )
+
+    if direction == "asc":
+        order_by = sort_field
+    else:
+        direction = "desc"
+        order_by = f"-{sort_field}"
+
+    movements = movements.order_by(
+        order_by,
+        "-id",
+    )
+
     paginator = Paginator(
         movements,
-        20,
+        get_items_per_page(),
     )
 
     page_obj = paginator.get_page(request.GET.get("page"))
@@ -392,8 +538,10 @@ def movement_list(request):
     context = {
         "page_obj": page_obj,
         "search": search,
-        "selected_movement_type": movement_type,
+        "selected_movement_type": (movement_type),
         "movement_types": (StockMovement.MovementType.choices),
+        "sort": sort,
+        "direction": direction,
     }
 
     template_name = "inventory/movements/list.html"

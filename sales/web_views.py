@@ -7,7 +7,13 @@ from django.contrib.auth.decorators import (
 )
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import (
+    DecimalField,
+    ExpressionWrapper,
+    F,
+    Q,
+    Sum,
+)
 from django.shortcuts import (
     get_object_or_404,
     redirect,
@@ -15,6 +21,8 @@ from django.shortcuts import (
 )
 
 from inventory.models import StockReservation
+
+from core.pagination import get_items_per_page
 
 from .exceptions import SalesOrderServiceError
 from .forms import (
@@ -93,12 +101,24 @@ def _build_items_from_formset(formset):
     raise_exception=True,
 )
 def sales_order_list(request):
-    orders = SalesOrder.objects.select_related(
-        "customer",
-        "warehouse",
-        "created_by",
-    ).prefetch_related(
-        "items",
+    line_total_expression = ExpressionWrapper(
+        F("items__quantity") * F("items__unit_price"),
+        output_field=DecimalField(
+            max_digits=14,
+            decimal_places=2,
+        ),
+    )
+
+    orders = (
+        SalesOrder.objects.select_related(
+            "customer",
+            "warehouse",
+            "created_by",
+        )
+        .prefetch_related(
+            "items",
+        )
+        .annotate(total_amount=Sum(line_total_expression))
     )
 
     search = request.GET.get(
@@ -111,6 +131,16 @@ def sales_order_list(request):
         "",
     ).strip()
 
+    sort = request.GET.get(
+        "sort",
+        "created",
+    ).strip()
+
+    direction = request.GET.get(
+        "direction",
+        "desc",
+    ).strip()
+
     if search:
         orders = orders.filter(
             Q(order_number__icontains=search)
@@ -121,11 +151,34 @@ def sales_order_list(request):
     if status:
         orders = orders.filter(status=status)
 
-    orders = orders.order_by("-created_at")
+    sort_fields = {
+        "order": "order_number",
+        "customer": "customer__name",
+        "warehouse": "warehouse__code",
+        "total": "total_amount",
+        "status": "status",
+        "created": "created_at",
+    }
+
+    sort_field = sort_fields.get(
+        sort,
+        "created_at",
+    )
+
+    if direction == "asc":
+        order_by = sort_field
+    else:
+        direction = "desc"
+        order_by = f"-{sort_field}"
+
+    orders = orders.order_by(
+        order_by,
+        "-id",
+    )
 
     paginator = Paginator(
         orders,
-        20,
+        get_items_per_page(),
     )
 
     page_obj = paginator.get_page(request.GET.get("page"))
@@ -135,6 +188,8 @@ def sales_order_list(request):
         "search": search,
         "selected_status": status,
         "statuses": SalesOrder.Status.choices,
+        "sort": sort,
+        "direction": direction,
         "can_manage_sales": (_can_manage_sales_order(request.user)),
     }
 

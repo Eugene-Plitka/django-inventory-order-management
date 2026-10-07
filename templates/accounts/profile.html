@@ -109,7 +109,7 @@
 
                 <strong>
                     {% if request.user.last_login %}
-                        {{ request.user.last_login|date:"M d, Y H:i" }}
+                        {{ request.user.last_login|date:"Y-m-d H:i" }}
                     {% else %}
                         Never
                     {% endif %}

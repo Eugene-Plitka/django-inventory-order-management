@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import transaction
 
+from core.services import get_system_settings
 from .models import Notification
 
 
@@ -55,6 +56,11 @@ def create_notification_for_role(
 
 
 def notify_sales_order_confirmed(order):
+    settings = get_system_settings()
+
+    if not settings.order_notifications_enabled:
+        return
+
     url = f"/sales-orders/{order.pk}/"
 
     create_notification_for_role(
@@ -67,6 +73,11 @@ def notify_sales_order_confirmed(order):
 
 
 def notify_sales_order_shipped(order):
+    settings = get_system_settings()
+
+    if not settings.order_notifications_enabled:
+        return
+
     if not order.created_by.is_active:
         return
 
@@ -80,6 +91,11 @@ def notify_sales_order_shipped(order):
 
 
 def notify_purchase_order_confirmed(order):
+    settings = get_system_settings()
+
+    if not settings.order_notifications_enabled:
+        return
+
     create_notification_for_role(
         role_name="Warehouse Employee",
         notification_type=(Notification.Type.PURCHASE_ORDER_CONFIRMED),
@@ -90,6 +106,11 @@ def notify_purchase_order_confirmed(order):
 
 
 def notify_purchase_order_received(order):
+    settings = get_system_settings()
+
+    if not settings.order_notifications_enabled:
+        return
+
     if not order.created_by.is_active:
         return
 
@@ -103,6 +124,11 @@ def notify_purchase_order_received(order):
 
 
 def notify_low_stock(stock):
+    settings = get_system_settings()
+
+    if not settings.low_stock_notifications_enabled:
+        return
+
     message = (
         f"{stock.product.sku} — "
         f"{stock.product.name} in "

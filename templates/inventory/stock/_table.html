@@ -3,21 +3,183 @@
     <table class="data-table">
 
         <thead>
+
             <tr>
-                <th>SKU</th>
-                <th>Product</th>
-                <th>Warehouse</th>
-                <th>Physical</th>
-                <th>Reserved</th>
-                <th>Available</th>
-                <th>Reorder Level</th>
-                <th>Status</th>
+
+                <th>
+
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&warehouse={{ selected_warehouse }}&low_stock={{ selected_low_stock }}&sort=sku&direction={% if sort == 'sku' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#stock-table"
+                        hx-push-url="true"
+                    >
+                        SKU
+
+                        {% if sort == "sku" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+
+                    </a>
+
+                </th>
+
+
+                <th>
+
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&warehouse={{ selected_warehouse }}&low_stock={{ selected_low_stock }}&sort=product&direction={% if sort == 'product' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#stock-table"
+                        hx-push-url="true"
+                    >
+                        Product
+
+                        {% if sort == "product" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+
+                    </a>
+
+                </th>
+
+
+                <th>
+
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&warehouse={{ selected_warehouse }}&low_stock={{ selected_low_stock }}&sort=warehouse&direction={% if sort == 'warehouse' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#stock-table"
+                        hx-push-url="true"
+                    >
+                        Warehouse
+
+                        {% if sort == "warehouse" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+
+                    </a>
+
+                </th>
+
+
+                <th>
+
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&warehouse={{ selected_warehouse }}&low_stock={{ selected_low_stock }}&sort=physical&direction={% if sort == 'physical' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#stock-table"
+                        hx-push-url="true"
+                    >
+                        Physical
+
+                        {% if sort == "physical" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+
+                    </a>
+
+                </th>
+
+
+                <th>
+
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&warehouse={{ selected_warehouse }}&low_stock={{ selected_low_stock }}&sort=reserved&direction={% if sort == 'reserved' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#stock-table"
+                        hx-push-url="true"
+                    >
+                        Reserved
+
+                        {% if sort == "reserved" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+
+                    </a>
+
+                </th>
+
+
+                <th>
+
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&warehouse={{ selected_warehouse }}&low_stock={{ selected_low_stock }}&sort=available&direction={% if sort == 'available' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#stock-table"
+                        hx-push-url="true"
+                    >
+                        Available
+
+                        {% if sort == "available" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+
+                    </a>
+
+                </th>
+
+
+                <th>
+
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&warehouse={{ selected_warehouse }}&low_stock={{ selected_low_stock }}&sort=reorder&direction={% if sort == 'reorder' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#stock-table"
+                        hx-push-url="true"
+                    >
+                        Reorder Level
+
+                        {% if sort == "reorder" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+
+                    </a>
+
+                </th>
+
+
+                <th>
+                    Status
+                </th>
+
 
                 {% if is_administrator %}
                     <th></th>
                 {% endif %}
+
             </tr>
+
         </thead>
+
 
         <tbody>
 
@@ -26,20 +188,25 @@
                 <tr>
 
                     <td>
+
                         <span class="product-sku">
                             {{ stock.product.sku }}
                         </span>
+
                     </td>
 
 
                     <td>
+
                         <div class="product-cell">
 
                             <div class="product-table-avatar">
                                 {{ stock.product.name|first|upper }}
                             </div>
 
+
                             <div>
+
                                 <div class="product-table-name">
                                     {{ stock.product.name }}
                                 </div>
@@ -47,13 +214,16 @@
                                 <div class="product-table-description">
                                     {{ stock.product.category.name }}
                                 </div>
+
                             </div>
 
                         </div>
+
                     </td>
 
 
                     <td>
+
                         <strong>
                             {{ stock.warehouse.code }}
                         </strong>
@@ -61,24 +231,30 @@
                         <div class="table-muted">
                             {{ stock.warehouse.name }}
                         </div>
+
                     </td>
 
 
                     <td>
+
                         <span class="stock-number">
                             {{ stock.quantity }}
                         </span>
+
                     </td>
 
 
                     <td>
+
                         <span class="stock-number stock-reserved">
                             {{ stock.reserved_quantity }}
                         </span>
+
                     </td>
 
 
                     <td>
+
                         <strong
                             class="
                                 stock-number
@@ -91,6 +267,7 @@
                         >
                             {{ stock.available_quantity }}
                         </strong>
+
                     </td>
 
 
@@ -100,27 +277,37 @@
 
 
                     <td>
+
                         {% if stock.available_quantity <= stock.reorder_level %}
+
                             <span class="status-badge stock-status-low">
                                 Low Stock
                             </span>
+
                         {% else %}
+
                             <span class="status-badge status-active">
                                 In Stock
                             </span>
+
                         {% endif %}
+
                     </td>
 
 
                     {% if is_administrator %}
+
                         <td class="table-actions">
+
                             <a
                                 href="{% url 'inventory_web:stock-adjust' stock.id %}"
                                 class="table-action-link"
                             >
                                 Adjust
                             </a>
+
                         </td>
+
                     {% endif %}
 
                 </tr>
@@ -128,12 +315,14 @@
             {% empty %}
 
                 <tr>
+
                     <td
                         colspan="{% if is_administrator %}9{% else %}8{% endif %}"
                         class="table-empty"
                     >
                         No stock records found.
                     </td>
+
                 </tr>
 
             {% endfor %}
@@ -147,50 +336,56 @@
 
 {% if page_obj.paginator.num_pages > 1 %}
 
-<div class="pagination-bar">
+    <div class="pagination-bar">
 
-    <div class="pagination-summary">
-        Showing
-        {{ page_obj.start_index }}
-        –
-        {{ page_obj.end_index }}
-        of
-        {{ page_obj.paginator.count }}
+        <div class="pagination-summary">
+
+            Showing
+            {{ page_obj.start_index }}
+            –
+            {{ page_obj.end_index }}
+            of
+            {{ page_obj.paginator.count }}
+
+        </div>
+
+
+        <div class="pagination">
+
+            {% if page_obj.has_previous %}
+
+                <a
+                    hx-get="?page={{ page_obj.previous_page_number }}&search={{ search|urlencode }}&warehouse={{ selected_warehouse }}&low_stock={{ selected_low_stock }}&sort={{ sort }}&direction={{ direction }}"
+                    hx-target="#stock-table"
+                    hx-push-url="true"
+                    class="pagination-button"
+                >
+                    ‹
+                </a>
+
+            {% endif %}
+
+
+            <span class="pagination-button pagination-active">
+                {{ page_obj.number }}
+            </span>
+
+
+            {% if page_obj.has_next %}
+
+                <a
+                    hx-get="?page={{ page_obj.next_page_number }}&search={{ search|urlencode }}&warehouse={{ selected_warehouse }}&low_stock={{ selected_low_stock }}&sort={{ sort }}&direction={{ direction }}"
+                    hx-target="#stock-table"
+                    hx-push-url="true"
+                    class="pagination-button"
+                >
+                    ›
+                </a>
+
+            {% endif %}
+
+        </div>
+
     </div>
-
-
-    <div class="pagination">
-
-        {% if page_obj.has_previous %}
-            <a
-                hx-get="?page={{ page_obj.previous_page_number }}&search={{ search }}&warehouse={{ selected_warehouse }}&low_stock={{ selected_low_stock }}"
-                hx-target="#stock-table"
-                hx-push-url="true"
-                class="pagination-button"
-            >
-                ‹
-            </a>
-        {% endif %}
-
-
-        <span class="pagination-button pagination-active">
-            {{ page_obj.number }}
-        </span>
-
-
-        {% if page_obj.has_next %}
-            <a
-                hx-get="?page={{ page_obj.next_page_number }}&search={{ search }}&warehouse={{ selected_warehouse }}&low_stock={{ selected_low_stock }}"
-                hx-target="#stock-table"
-                hx-push-url="true"
-                class="pagination-button"
-            >
-                ›
-            </a>
-        {% endif %}
-
-    </div>
-
-</div>
 
 {% endif %}

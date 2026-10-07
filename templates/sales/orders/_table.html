@@ -1,18 +1,141 @@
+{% load ui %}
+
 <div class="table-wrapper">
 
     <table class="data-table">
 
         <thead>
             <tr>
-                <th>Order</th>
-                <th>Customer</th>
-                <th>Warehouse</th>
-                <th>Items</th>
-                <th>Status</th>
-                <th>Created</th>
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status|urlencode }}&sort=order&direction={% if sort == 'order' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#sales-orders-table"
+                        hx-push-url="true"
+                    >
+                        Order
+
+                        {% if sort == "order" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status|urlencode }}&sort=customer&direction={% if sort == 'customer' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#sales-orders-table"
+                        hx-push-url="true"
+                    >
+                        Customer
+
+                        {% if sort == "customer" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status|urlencode }}&sort=warehouse&direction={% if sort == 'warehouse' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#sales-orders-table"
+                        hx-push-url="true"
+                    >
+                        Warehouse
+
+                        {% if sort == "warehouse" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+
+                <th>
+                    Items
+                </th>
+
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status|urlencode }}&sort=total&direction={% if sort == 'total' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#sales-orders-table"
+                        hx-push-url="true"
+                    >
+                        Total
+
+                        {% if sort == "total" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status|urlencode }}&sort=status&direction={% if sort == 'status' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#sales-orders-table"
+                        hx-push-url="true"
+                    >
+                        Status
+
+                        {% if sort == "status" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&status={{ selected_status|urlencode }}&sort=created&direction={% if sort == 'created' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#sales-orders-table"
+                        hx-push-url="true"
+                    >
+                        Created
+
+                        {% if sort == "created" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
                 <th></th>
+
             </tr>
         </thead>
+
 
         <tbody>
 
@@ -50,6 +173,13 @@
 
 
                     <td>
+                        <strong class="table-primary">
+                            {{ order.total_amount|amount }}
+                        </strong>
+                    </td>
+
+
+                    <td>
                         <span
                             class="status-badge status-{{ order.status|lower }}"
                         >
@@ -59,7 +189,7 @@
 
 
                     <td class="table-muted">
-                        {{ order.created_at|date:"M d, Y H:i" }}
+                        {{ order.created_at|date:"Y-m-d H:i" }}
                     </td>
 
 
@@ -78,7 +208,7 @@
 
                 <tr>
                     <td
-                        colspan="7"
+                        colspan="8"
                         class="table-empty"
                     >
                         No sales orders found.
@@ -96,50 +226,54 @@
 
 {% if page_obj.paginator.num_pages > 1 %}
 
-<div class="pagination-bar">
+    <div class="pagination-bar">
 
-    <div class="pagination-summary">
-        Showing
-        {{ page_obj.start_index }}
-        –
-        {{ page_obj.end_index }}
-        of
-        {{ page_obj.paginator.count }}
+        <div class="pagination-summary">
+            Showing
+            {{ page_obj.start_index }}
+            –
+            {{ page_obj.end_index }}
+            of
+            {{ page_obj.paginator.count }}
+        </div>
+
+
+        <div class="pagination">
+
+            {% if page_obj.has_previous %}
+
+                <a
+                    hx-get="?page={{ page_obj.previous_page_number }}&search={{ search|urlencode }}&status={{ selected_status|urlencode }}&sort={{ sort }}&direction={{ direction }}"
+                    hx-target="#sales-orders-table"
+                    hx-push-url="true"
+                    class="pagination-button"
+                >
+                    ‹
+                </a>
+
+            {% endif %}
+
+
+            <span class="pagination-button pagination-active">
+                {{ page_obj.number }}
+            </span>
+
+
+            {% if page_obj.has_next %}
+
+                <a
+                    hx-get="?page={{ page_obj.next_page_number }}&search={{ search|urlencode }}&status={{ selected_status|urlencode }}&sort={{ sort }}&direction={{ direction }}"
+                    hx-target="#sales-orders-table"
+                    hx-push-url="true"
+                    class="pagination-button"
+                >
+                    ›
+                </a>
+
+            {% endif %}
+
+        </div>
+
     </div>
-
-
-    <div class="pagination">
-
-        {% if page_obj.has_previous %}
-            <a
-                hx-get="?page={{ page_obj.previous_page_number }}&search={{ search }}&status={{ selected_status }}"
-                hx-target="#sales-orders-table"
-                hx-push-url="true"
-                class="pagination-button"
-            >
-                ‹
-            </a>
-        {% endif %}
-
-
-        <span class="pagination-button pagination-active">
-            {{ page_obj.number }}
-        </span>
-
-
-        {% if page_obj.has_next %}
-            <a
-                hx-get="?page={{ page_obj.next_page_number }}&search={{ search }}&status={{ selected_status }}"
-                hx-target="#sales-orders-table"
-                hx-push-url="true"
-                class="pagination-button"
-            >
-                ›
-            </a>
-        {% endif %}
-
-    </div>
-
-</div>
 
 {% endif %}

@@ -7,6 +7,8 @@ from django.shortcuts import (
 )
 from django.views.decorators.http import require_POST
 
+from core.pagination import get_items_per_page
+
 from .models import Notification
 
 
@@ -19,15 +21,38 @@ def notification_list(request):
         "",
     ).strip()
 
+    sort = request.GET.get(
+        "sort",
+        "newest",
+    ).strip()
+
     if status == "unread":
         notifications = notifications.filter(is_read=False)
 
     elif status == "read":
         notifications = notifications.filter(is_read=True)
 
+    sort_fields = {
+        "newest": "-created_at",
+        "oldest": "created_at",
+    }
+
+    order_by = sort_fields.get(
+        sort,
+        "-created_at",
+    )
+
+    if sort not in sort_fields:
+        sort = "newest"
+
+    notifications = notifications.order_by(
+        order_by,
+        "-id",
+    )
+
     paginator = Paginator(
         notifications,
-        20,
+        get_items_per_page(),
     )
 
     page_obj = paginator.get_page(request.GET.get("page"))
@@ -35,6 +60,7 @@ def notification_list(request):
     context = {
         "page_obj": page_obj,
         "selected_status": status,
+        "sort": sort,
     }
 
     template_name = "notifications/list.html"

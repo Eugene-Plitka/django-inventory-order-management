@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Settings
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+        <h1 class="page-title">
+            Settings
+        </h1>
+
+        <p class="page-subtitle">
+            Configure global application settings.
+        </p>
+    </div>
+
+</div>
+
+
+{% if messages %}
+
+    {% for message in messages %}
+
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+
+    {% endfor %}
+
+{% endif %}
+
+
+<form
+    method="post"
+    class="card form-card"
+>
+
+    {% csrf_token %}
+
+
+    <div class="form-section">
+
+        <div class="form-section-header">
+
+            <h2>
+                General
+            </h2>
+
+            <p>
+                Core application configuration.
+            </p>
+
+        </div>
+
+
+        <div class="form-grid">
+
+            <div class="form-group form-group-full">
+
+                <label for="{{ form.company_name.id_for_label }}">
+                    Company Name
+                </label>
+
+                {{ form.company_name }}
+
+            </div>
+
+            <div class="form-group form-group-full">
+
+                <label for="{{ form.company_description.id_for_label }}">
+                    Company Description
+                </label>
+
+                {{ form.company_description }}
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="{{ form.sales_order_prefix.id_for_label }}">
+                    Sales Order Prefix
+                </label>
+
+                {{ form.sales_order_prefix }}
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="{{ form.purchase_order_prefix.id_for_label }}">
+                    Purchase Order Prefix
+                </label>
+
+                {{ form.purchase_order_prefix }}
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="{{ form.default_reorder_level.id_for_label }}">
+                    Default Reorder Level
+                </label>
+
+                {{ form.default_reorder_level }}
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="{{ form.items_per_page.id_for_label }}">
+                    Items Per Page
+                </label>
+
+                {{ form.items_per_page }}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="form-section">
+
+        <div class="form-section-header">
+
+            <h2>
+                Notifications
+            </h2>
+
+            <p>
+                Control automatic system notifications.
+            </p>
+
+        </div>
+
+
+        <div class="form-grid">
+
+            <div class="form-group form-group-checkbox">
+
+                <label class="checkbox-label">
+
+                    {{ form.low_stock_notifications_enabled }}
+
+                    <span>
+                        Enable low stock notifications
+                    </span>
+
+                </label>
+
+            </div>
+
+
+            <div class="form-group form-group-checkbox">
+
+                <label class="checkbox-label">
+
+                    {{ form.order_notifications_enabled }}
+
+                    <span>
+                        Enable order notifications
+                    </span>
+
+                </label>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="form-actions">
+
+        <button
+            type="submit"
+            class="button button-primary"
+        >
+            Save Settings
+        </button>
+
+    </div>
+
+</form>
+
+{% endblock %}

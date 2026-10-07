@@ -10,6 +10,8 @@ from django.shortcuts import (
     render,
 )
 
+from core.pagination import get_items_per_page
+
 from .forms import CustomerForm, SupplierForm
 from .models import Customer, Supplier
 
@@ -23,6 +25,16 @@ def _partner_list_context(request, queryset):
     status = request.GET.get(
         "status",
         "",
+    ).strip()
+
+    sort = request.GET.get(
+        "sort",
+        "name",
+    ).strip()
+
+    direction = request.GET.get(
+        "direction",
+        "asc",
     ).strip()
 
     if search:
@@ -40,11 +52,34 @@ def _partner_list_context(request, queryset):
     if status == "inactive":
         queryset = queryset.filter(is_active=False)
 
-    queryset = queryset.order_by("name")
+    sort_fields = {
+        "name": "name",
+        "contact": "contact_person",
+        "email": "email",
+        "phone": "phone",
+        "tax": "tax_id",
+        "status": "is_active",
+    }
+
+    sort_field = sort_fields.get(
+        sort,
+        "name",
+    )
+
+    if direction == "desc":
+        order_by = f"-{sort_field}"
+    else:
+        direction = "asc"
+        order_by = sort_field
+
+    queryset = queryset.order_by(
+        order_by,
+        "id",
+    )
 
     paginator = Paginator(
         queryset,
-        20,
+        get_items_per_page(),
     )
 
     page_obj = paginator.get_page(request.GET.get("page"))
@@ -53,6 +88,8 @@ def _partner_list_context(request, queryset):
         "page_obj": page_obj,
         "search": search,
         "selected_status": status,
+        "sort": sort,
+        "direction": direction,
     }
 
 

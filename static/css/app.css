@@ -2831,3 +2831,84 @@ textarea.form-control {
         justify-content: flex-start;
     }
 }
+
+/* TABLE SORTING */
+
+.table-sort-link {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 4px;
+
+    color: inherit;
+
+    cursor: pointer;
+
+    text-decoration: none;
+}
+
+.table-sort-link:hover {
+    color: #2d7bdc;
+}
+
+/* ORDER STATUS BADGES */
+
+.status-draft {
+    color: #5d6878;
+    background: #eef1f5;
+}
+
+
+.status-confirmed {
+    color: #2563a9;
+    background: #eaf3fd;
+}
+
+
+.status-processing {
+    color: #8b5a13;
+    background: #fff4dc;
+}
+
+
+.status-shipped {
+    color: #18794e;
+    background: #e7f6ee;
+}
+
+
+.status-received {
+    color: #18794e;
+    background: #e7f6ee;
+}
+
+
+.status-cancelled {
+    color: #b42318;
+    background: #fcebea;
+}
+
+/* INVENTORY STATUS BADGES */
+
+.status-active {
+    color: #18794e;
+    background: #e7f6ee;
+}
+
+
+.status-released {
+    color: #667085;
+    background: #f0f2f5;
+}
+
+
+.status-consumed {
+    color: #2563a9;
+    background: #eaf3fd;
+}
+
+
+.status-inactive {
+    color: #b42318;
+    background: #fcebea;
+}

@@ -1,18 +1,136 @@
+{% load ui %}
+
 <div class="table-wrapper">
 
     <table class="data-table">
 
         <thead>
             <tr>
-                <th>SKU</th>
-                <th>Product</th>
-                <th>Category</th>
-                <th>Manufacturer</th>
-                <th>Price</th>
-                <th>Status</th>
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&category={{ selected_category }}&manufacturer={{ selected_manufacturer }}&status={{ selected_status }}&sort=sku&direction={% if sort == 'sku' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#products-table"
+                        hx-push-url="true"
+                    >
+                        SKU
+
+                        {% if sort == "sku" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&category={{ selected_category }}&manufacturer={{ selected_manufacturer }}&status={{ selected_status }}&sort=name&direction={% if sort == 'name' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#products-table"
+                        hx-push-url="true"
+                    >
+                        Product
+
+                        {% if sort == "name" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&category={{ selected_category }}&manufacturer={{ selected_manufacturer }}&status={{ selected_status }}&sort=category&direction={% if sort == 'category' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#products-table"
+                        hx-push-url="true"
+                    >
+                        Category
+
+                        {% if sort == "category" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&category={{ selected_category }}&manufacturer={{ selected_manufacturer }}&status={{ selected_status }}&sort=manufacturer&direction={% if sort == 'manufacturer' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#products-table"
+                        hx-push-url="true"
+                    >
+                        Manufacturer
+
+                        {% if sort == "manufacturer" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&category={{ selected_category }}&manufacturer={{ selected_manufacturer }}&status={{ selected_status }}&sort=price&direction={% if sort == 'price' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#products-table"
+                        hx-push-url="true"
+                    >
+                        Price
+
+                        {% if sort == "price" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
+
+                <th>
+                    <a
+                        class="table-sort-link"
+                        hx-get="?search={{ search|urlencode }}&category={{ selected_category }}&manufacturer={{ selected_manufacturer }}&status={{ selected_status }}&sort=status&direction={% if sort == 'status' and direction == 'asc' %}desc{% else %}asc{% endif %}"
+                        hx-target="#products-table"
+                        hx-push-url="true"
+                    >
+                        Status
+
+                        {% if sort == "status" %}
+                            {% if direction == "asc" %}
+                                ↑
+                            {% else %}
+                                ↓
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+
                 <th></th>
+
             </tr>
         </thead>
+
 
         <tbody>
 
@@ -26,63 +144,88 @@
                         </span>
                     </td>
 
+
                     <td>
+
                         <div class="product-cell">
 
                             <div class="product-table-avatar">
                                 {{ product.name|first|upper }}
                             </div>
 
+
                             <div>
+
                                 <div class="product-table-name">
                                     {{ product.name }}
                                 </div>
 
                                 {% if product.description %}
+
                                     <div class="product-table-description">
                                         {{ product.description|truncatechars:55 }}
                                     </div>
+
                                 {% endif %}
+
                             </div>
 
                         </div>
+
                     </td>
+
 
                     <td>
                         {{ product.category.name }}
                     </td>
 
+
                     <td>
                         {{ product.manufacturer.name }}
                     </td>
 
-                    <td>
-                        <strong class="product-price">
-                            ${{ product.sale_price }}
-                        </strong>
-                    </td>
 
                     <td>
+
+                        <strong class="product-price">
+                            {{ product.sale_price|amount }}
+                        </strong>
+
+                    </td>
+
+
+                    <td>
+
                         {% if product.is_active %}
+
                             <span class="status-badge status-active">
                                 Active
                             </span>
+
                         {% else %}
+
                             <span class="status-badge status-inactive">
                                 Inactive
                             </span>
+
                         {% endif %}
+
                     </td>
 
+
                     <td class="table-actions">
+
                         {% if perms.catalog.change_product %}
+
                             <a
                                 href="{% url 'catalog_web:product-update' product.id %}"
                                 class="table-action-link"
                             >
                                 Edit
                             </a>
+
                         {% endif %}
+
                     </td>
 
                 </tr>
@@ -90,12 +233,14 @@
             {% empty %}
 
                 <tr>
+
                     <td
                         colspan="7"
                         class="table-empty"
                     >
                         No products found.
                     </td>
+
                 </tr>
 
             {% endfor %}
@@ -109,69 +254,75 @@
 
 {% if page_obj.paginator.num_pages > 1 %}
 
-<div class="pagination-bar">
+    <div class="pagination-bar">
 
-    <div class="pagination-summary">
-        Showing
-        {{ page_obj.start_index }}
-        –
-        {{ page_obj.end_index }}
-        of
-        {{ page_obj.paginator.count }}
-    </div>
+        <div class="pagination-summary">
 
+            Showing
+            {{ page_obj.start_index }}
+            –
+            {{ page_obj.end_index }}
+            of
+            {{ page_obj.paginator.count }}
 
-    <div class="pagination">
-
-        {% if page_obj.has_previous %}
-            <a
-                hx-get="?page={{ page_obj.previous_page_number }}&search={{ search }}&category={{ selected_category }}&manufacturer={{ selected_manufacturer }}&status={{ selected_status }}"
-                hx-target="#products-table"
-                hx-push-url="true"
-                class="pagination-button"
-            >
-                ‹
-            </a>
-        {% endif %}
+        </div>
 
 
-        {% for page_number in page_obj.paginator.page_range %}
+        <div class="pagination">
 
-            {% if page_number == page_obj.number %}
-
-                <span class="pagination-button pagination-active">
-                    {{ page_number }}
-                </span>
-
-            {% elif page_number >= page_obj.number|add:"-2" and page_number <= page_obj.number|add:"2" %}
+            {% if page_obj.has_previous %}
 
                 <a
-                    hx-get="?page={{ page_number }}&search={{ search }}&category={{ selected_category }}&manufacturer={{ selected_manufacturer }}&status={{ selected_status }}"
+                    hx-get="?page={{ page_obj.previous_page_number }}&search={{ search|urlencode }}&category={{ selected_category }}&manufacturer={{ selected_manufacturer }}&status={{ selected_status }}&sort={{ sort }}&direction={{ direction }}"
                     hx-target="#products-table"
                     hx-push-url="true"
                     class="pagination-button"
                 >
-                    {{ page_number }}
+                    ‹
                 </a>
 
             {% endif %}
 
-        {% endfor %}
+
+            {% for page_number in page_obj.paginator.page_range %}
+
+                {% if page_number == page_obj.number %}
+
+                    <span class="pagination-button pagination-active">
+                        {{ page_number }}
+                    </span>
+
+                {% elif page_number >= page_obj.number|add:"-2" and page_number <= page_obj.number|add:"2" %}
+
+                    <a
+                        hx-get="?page={{ page_number }}&search={{ search|urlencode }}&category={{ selected_category }}&manufacturer={{ selected_manufacturer }}&status={{ selected_status }}&sort={{ sort }}&direction={{ direction }}"
+                        hx-target="#products-table"
+                        hx-push-url="true"
+                        class="pagination-button"
+                    >
+                        {{ page_number }}
+                    </a>
+
+                {% endif %}
+
+            {% endfor %}
 
 
-        {% if page_obj.has_next %}
-            <a
-                hx-get="?page={{ page_obj.next_page_number }}&search={{ search }}&category={{ selected_category }}&manufacturer={{ selected_manufacturer }}&status={{ selected_status }}"
-                hx-target="#products-table"
-                hx-push-url="true"
-                class="pagination-button"
-            >
-                ›
-            </a>
-        {% endif %}
+            {% if page_obj.has_next %}
+
+                <a
+                    hx-get="?page={{ page_obj.next_page_number }}&search={{ search|urlencode }}&category={{ selected_category }}&manufacturer={{ selected_manufacturer }}&status={{ selected_status }}&sort={{ sort }}&direction={{ direction }}"
+                    hx-target="#products-table"
+                    hx-push-url="true"
+                    class="pagination-button"
+                >
+                    ›
+                </a>
+
+            {% endif %}
+
+        </div>
 
     </div>
-
-</div>
 
 {% endif %}

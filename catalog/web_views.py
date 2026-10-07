@@ -6,6 +6,8 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 
+from core.pagination import get_items_per_page
+
 from .forms import (
     CategoryForm,
     ManufacturerForm,
@@ -21,10 +23,35 @@ def product_list(request):
         "manufacturer",
     )
 
-    search = request.GET.get("search", "").strip()
-    category_id = request.GET.get("category", "").strip()
-    manufacturer_id = request.GET.get("manufacturer", "").strip()
-    status = request.GET.get("status", "").strip()
+    search = request.GET.get(
+        "search",
+        "",
+    ).strip()
+
+    category_id = request.GET.get(
+        "category",
+        "",
+    ).strip()
+
+    manufacturer_id = request.GET.get(
+        "manufacturer",
+        "",
+    ).strip()
+
+    status = request.GET.get(
+        "status",
+        "",
+    ).strip()
+
+    sort = request.GET.get(
+        "sort",
+        "name",
+    ).strip()
+
+    direction = request.GET.get(
+        "direction",
+        "asc",
+    ).strip()
 
     if search:
         products = products.filter(
@@ -45,11 +72,34 @@ def product_list(request):
     if status == "inactive":
         products = products.filter(is_active=False)
 
-    products = products.order_by("name")
+    sort_fields = {
+        "sku": "sku",
+        "name": "name",
+        "category": "category__name",
+        "manufacturer": "manufacturer__name",
+        "price": "sale_price",
+        "status": "is_active",
+    }
+
+    sort_field = sort_fields.get(
+        sort,
+        "name",
+    )
+
+    if direction == "desc":
+        order_by = f"-{sort_field}"
+    else:
+        direction = "asc"
+        order_by = sort_field
+
+    products = products.order_by(
+        order_by,
+        "id",
+    )
 
     paginator = Paginator(
         products,
-        20,
+        get_items_per_page(),
     )
 
     page_number = request.GET.get("page")
@@ -58,12 +108,14 @@ def product_list(request):
 
     context = {
         "page_obj": page_obj,
-        "categories": Category.objects.order_by("name"),
-        "manufacturers": Manufacturer.objects.order_by("name"),
+        "categories": (Category.objects.order_by("name")),
+        "manufacturers": (Manufacturer.objects.order_by("name")),
         "search": search,
         "selected_category": category_id,
         "selected_manufacturer": manufacturer_id,
         "selected_status": status,
+        "sort": sort,
+        "direction": direction,
     }
 
     template_name = "catalog/products/list.html"
@@ -154,6 +206,16 @@ def category_list(request):
         "",
     ).strip()
 
+    sort = request.GET.get(
+        "sort",
+        "name",
+    ).strip()
+
+    direction = request.GET.get(
+        "direction",
+        "asc",
+    ).strip()
+
     if search:
         categories = categories.filter(
             Q(name__icontains=search)
@@ -161,11 +223,30 @@ def category_list(request):
             | Q(description__icontains=search)
         )
 
-    categories = categories.order_by("name")
+    sort_fields = {
+        "name": "name",
+        "slug": "slug",
+    }
+
+    sort_field = sort_fields.get(
+        sort,
+        "name",
+    )
+
+    if direction == "desc":
+        order_by = f"-{sort_field}"
+    else:
+        direction = "asc"
+        order_by = sort_field
+
+    categories = categories.order_by(
+        order_by,
+        "id",
+    )
 
     paginator = Paginator(
         categories,
-        20,
+        get_items_per_page(),
     )
 
     page_number = request.GET.get("page")
@@ -175,6 +256,8 @@ def category_list(request):
     context = {
         "page_obj": page_obj,
         "search": search,
+        "sort": sort,
+        "direction": direction,
     }
 
     template_name = "catalog/categories/list.html"
@@ -265,6 +348,16 @@ def manufacturer_list(request):
         "",
     ).strip()
 
+    sort = request.GET.get(
+        "sort",
+        "name",
+    ).strip()
+
+    direction = request.GET.get(
+        "direction",
+        "asc",
+    ).strip()
+
     if search:
         manufacturers = manufacturers.filter(
             Q(name__icontains=search)
@@ -272,11 +365,31 @@ def manufacturer_list(request):
             | Q(website__icontains=search)
         )
 
-    manufacturers = manufacturers.order_by("name")
+    sort_fields = {
+        "name": "name",
+        "country": "country",
+        "website": "website",
+    }
+
+    sort_field = sort_fields.get(
+        sort,
+        "name",
+    )
+
+    if direction == "desc":
+        order_by = f"-{sort_field}"
+    else:
+        direction = "asc"
+        order_by = sort_field
+
+    manufacturers = manufacturers.order_by(
+        order_by,
+        "id",
+    )
 
     paginator = Paginator(
         manufacturers,
-        20,
+        get_items_per_page(),
     )
 
     page_number = request.GET.get("page")
@@ -286,6 +399,8 @@ def manufacturer_list(request):
     context = {
         "page_obj": page_obj,
         "search": search,
+        "sort": sort,
+        "direction": direction,
     }
 
     template_name = "catalog/manufacturers/list.html"

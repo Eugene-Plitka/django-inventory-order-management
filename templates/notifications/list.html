@@ -9,6 +9,7 @@
 <div class="page-header">
 
     <div>
+
         <h1 class="page-title">
             Notifications
         </h1>
@@ -16,6 +17,7 @@
         <p class="page-subtitle">
             Review account and operational notifications.
         </p>
+
     </div>
 
 
@@ -73,7 +75,7 @@
                     selected
                 {% endif %}
             >
-                Unread
+                Unread only
             </option>
 
             <option
@@ -82,7 +84,30 @@
                     selected
                 {% endif %}
             >
-                Read
+                Read only
+            </option>
+
+        </select>
+
+
+        <select name="sort">
+
+            <option
+                value="newest"
+                {% if sort == "newest" %}
+                    selected
+                {% endif %}
+            >
+                Newest first
+            </option>
+
+            <option
+                value="oldest"
+                {% if sort == "oldest" %}
+                    selected
+                {% endif %}
+            >
+                Oldest first
             </option>
 
         </select>
