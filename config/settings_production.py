@@ -59,3 +59,16 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
     *MIDDLEWARE[1:],
 ]
+
+# JWT signing key is separate from the Django SECRET_KEY.
+# It can be rotated during a demo environment reset.
+
+JWT_SIGNING_KEY = read_secret("JWT_SIGNING_KEY")
+
+if not JWT_SIGNING_KEY:
+    raise RuntimeError("JWT_SIGNING_KEY must be configured for production.")
+
+SIMPLE_JWT = {
+    **SIMPLE_JWT,
+    "SIGNING_KEY": JWT_SIGNING_KEY,
+}

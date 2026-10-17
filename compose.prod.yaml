@@ -28,10 +28,12 @@ services:
       POSTGRES_HOST: eugene_postgres
       POSTGRES_PORT: "5432"
       POSTGRES_PASSWORD_FILE: /run/secrets/inventory_password
+      JWT_SIGNING_KEY_FILE: /run/secrets/jwt_signing_key
 
     secrets:
       - django_secret_key
       - inventory_password
+      - jwt_signing_key
 
     networks:
       - proxy
@@ -51,6 +53,9 @@ secrets:
 
   inventory_password:
     file: /srv/eugene-dev-hub/postgres/secrets/inventory_password
+
+  jwt_signing_key:
+    file: /srv/eugene-dev-hub/projects/django-inventory-order-management/secrets/jwt_signing_key
 
 volumes:
   inventory_static:
