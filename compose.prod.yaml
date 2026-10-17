@@ -1,0 +1,65 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    restart: unless-stopped
+
+    command:
+      - gunicorn
+      - config.wsgi:application
+      - --bind
+      - 0.0.0.0:8000
+      - --workers
+      - "2"
+      - --timeout
+      - "60"
+      - --access-logfile
+      - "-"
+      - --error-logfile
+      - "-"
+
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings_production
+      SECRET_KEY_FILE: /run/secrets/django_secret_key
+      POSTGRES_DB: inventory_db
+      POSTGRES_USER: inventory_user
+      POSTGRES_HOST: eugene_postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_PASSWORD_FILE: /run/secrets/inventory_password
+
+    secrets:
+      - django_secret_key
+      - inventory_password
+
+    networks:
+      - proxy
+      - database
+
+    expose:
+      - "8000"
+
+    volumes:
+      - inventory_static:/app/staticfiles
+
+    mem_limit: 512m
+
+secrets:
+  django_secret_key:
+    file: /srv/eugene-dev-hub/projects/django-inventory-order-management/secrets/django_secret_key
+
+  inventory_password:
+    file: /srv/eugene-dev-hub/postgres/secrets/inventory_password
+
+volumes:
+  inventory_static:
+
+networks:
+  proxy:
+    external: true
+    name: eugene_proxy
+
+  database:
+    external: true
+    name: eugene_database

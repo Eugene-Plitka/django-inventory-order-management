@@ -29,3 +29,6 @@ db.sqlite3
 # Coverage
 .coverage
 htmlcov/
+
+# Collected production static files
+staticfiles/
