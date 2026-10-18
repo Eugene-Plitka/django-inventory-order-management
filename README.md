@@ -4,6 +4,14 @@ A portfolio project built with Django that demonstrates a complete inventory and
 
 The application combines a server-rendered web interface with a REST API and includes multi-warehouse stock management, sales and purchase order lifecycles, stock reservations, stock movements, notifications, role-based access control, demo data generation, automated tests, and CI.
 
+## Live Demo
+
+The application is deployed and available online.
+
+**[🌐 Open Live Demo](https://issuetracker.eugene-dev-hub.space/)**
+
+> Demo accounts and login credentials are available on the [portfolio website](https://eugene-dev-hub.space/).
+
 ## Key Features
 
 - Product catalog with categories, manufacturers, SKU and pricing
