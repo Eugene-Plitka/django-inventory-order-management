@@ -1,0 +1,301 @@
+/* Mobile-only overrides. Keep the original app.css unchanged. */
+.mobile-menu-toggle,
+.mobile-search-toggle,
+.mobile-sidebar-backdrop { display: none; }
+
+@media (max-width: 760px) {
+    html, body { max-width: 100%; }
+    body { overflow-x: hidden; }
+    .app-shell { display: block; min-height: 100dvh; }
+    .app-main { margin-left: 0; width: 100%; min-width: 0; }
+
+    /* Full-width toolbar; the desktop left sidebar becomes a drawer. */
+    .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 80;
+        min-height: 62px;
+        padding: 0 12px;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .mobile-menu-toggle,
+    .mobile-search-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 40px;
+        width: 40px;
+        height: 40px;
+        padding: 8px;
+        background: #fff;
+        border: 1px solid #dfe5ec;
+        border-radius: 8px;
+        color: #334155;
+        cursor: pointer;
+    }
+
+    .mobile-menu-toggle svg,
+    .mobile-search-toggle svg {
+        width: 21px;
+        height: 21px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.9;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .topbar-actions { margin-left: auto; gap: 6px; min-width: 0; }
+    .topbar .user-info,
+    .topbar .user-chevron { display: none; }
+    .topbar .user-menu-button { padding: 0; }
+    .notification-dropdown,
+    .user-dropdown { max-width: calc(100vw - 24px); }
+
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 102;
+        width: min(280px, calc(100vw - 56px));
+        height: 100dvh;
+        min-height: 0;
+        overflow-y: auto;
+        transform: translateX(-105%);
+        transition: transform 180ms ease;
+        visibility: hidden;
+    }
+
+    body.mobile-nav-open { overflow: hidden; }
+    body.mobile-nav-open .sidebar {
+        transform: translateX(0);
+        visibility: visible;
+    }
+
+    .mobile-sidebar-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 101;
+        border: 0;
+        background: rgba(6, 16, 30, .62);
+    }
+
+    body.mobile-nav-open .mobile-sidebar-backdrop { display: block; }
+
+    /* Icon expands the existing Alpine/HTMX search; no duplicate input. */
+    .topbar .topbar-search { display: none; }
+    body.mobile-search-open .topbar-search {
+        display: flex;
+        position: absolute;
+        top: 100%;
+        left: 10px;
+        right: 10px;
+        z-index: 90;
+        width: auto;
+        min-height: 48px;
+        background: #fff;
+        box-shadow: 0 10px 30px rgba(0,0,0,.18);
+    }
+    body.mobile-search-open .topbar-search input { min-width: 0; width: 100%; }
+    body.mobile-search-open .global-search-results {
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-height: 65dvh;
+        overflow-y: auto;
+    }
+
+    .page-content {
+        padding: 18px 12px 28px;
+        min-height: calc(100dvh - 62px);
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .page-header {
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: flex-start;
+    }
+
+    .page-header > div:first-child {
+        min-width: 0;
+        flex: 1 1 220px;
+    }
+
+    .page-title { overflow-wrap: anywhere; }
+
+    .page-header-actions {
+        width: 100%;
+        max-width: 100%;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+
+    .page-header-actions .button {
+        white-space: normal;
+        text-align: center;
+    }
+
+    /* Dashboard: four KPI cards stacked vertically. */
+    .stats-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+    .stat-card,
+    .stat-card-content { width: 100%; min-width: 0; }
+
+    .dashboard-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+    }
+
+    .dashboard-grid > .dashboard-panel {
+        min-width: 0;
+        width: 100%;
+        grid-column: auto !important;
+    }
+
+    .dashboard-panel .table-wrapper {
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .dashboard-panel .data-table {
+        width: max-content;
+        min-width: 670px;
+    }
+
+    .dashboard-panel .data-table td,
+    .dashboard-panel .data-table th { white-space: nowrap; }
+
+    .dashboard-panel .panel-header { gap: 12px; }
+    .dashboard-panel .panel-title { overflow-wrap: anywhere; }
+
+    /* List pages: keep panels wide and allow horizontal swipe only inside the content area. */
+    .page-content > .catalog-panel,
+    .page-content > .card.catalog-panel {
+        min-width: 690px;
+    }
+
+    .catalog-panel .table-wrapper,
+    .card .table-wrapper {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .catalog-panel .data-table,
+    .card:not(.dashboard-panel) .data-table {
+        width: max-content;
+        min-width: 690px;
+    }
+
+    .data-table th,
+    .data-table td {
+        word-break: normal;
+        overflow-wrap: normal;
+    }
+
+    .catalog-panel .data-table th,
+    .catalog-panel .data-table td { white-space: nowrap; }
+
+    .catalog-panel .product-filters,
+    .catalog-panel .order-filters {
+        grid-template-columns: minmax(270px, 1fr) repeat(auto-fit, minmax(145px, 175px));
+        align-items: center;
+    }
+
+    .catalog-panel .filter-search { min-width: 270px; }
+    .catalog-panel .filter-search input { min-width: 0; }
+
+    /* Forms / settings / profile pages: full width, no forced horizontal layout. */
+    .page-content > .form-card,
+    .page-content > .settings-layout,
+    .page-content > .profile-layout,
+    .page-content > .settings-grid {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .settings-layout,
+    .settings-grid,
+    .profile-layout {
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 14px;
+    }
+
+    .settings-layout > *,
+    .settings-grid > *,
+    .profile-layout > * {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .form-card,
+    .settings-layout .card,
+    .settings-grid .card,
+    .profile-layout .card {
+        width: 100%;
+        min-width: 0;
+    }
+
+    /* Order / document details: stack blocks vertically instead of whole-page horizontal scroll. */
+    .page-content > .order-layout,
+    .page-content > .detail-layout,
+    .page-content > .details-layout {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .order-layout,
+    .detail-layout,
+    .details-layout {
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 14px;
+    }
+
+    .order-main,
+    .order-sidebar,
+    .detail-main,
+    .detail-sidebar {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .order-sidebar,
+    .detail-sidebar {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+    }
+
+    .order-main .card,
+    .order-sidebar .card,
+    .detail-main .card,
+    .detail-sidebar .card {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .order-main .table-wrapper,
+    .detail-main .table-wrapper {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .order-main .data-table,
+    .detail-main .data-table {
+        width: max-content;
+        min-width: 620px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sidebar { transition: none; }
+}
